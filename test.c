@@ -61,13 +61,19 @@ int main()
         Slice s1 = slice_new("slice 1 test from slice 1");
 
         assert(slice_starts_with(s1, slice_new("slice")));
+        assert(slice_starts_with(s1, "slice"));
+
         assert(!slice_starts_with(s1, slice_new("Slice")));
+        assert(!slice_starts_with(s1, "Slice"));
     }
     {
         Slice s1 = slice_new("slice 1 test from slice 1");
 
         assert(slice_ends_with(s1, slice_new("1")));
+        assert(slice_ends_with(s1, "1"));
+
         assert(!slice_ends_with(s1, slice_new("1 ")));
+        assert(!slice_ends_with(s1, "1 "));
     }
 
     return 0;

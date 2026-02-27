@@ -39,15 +39,17 @@ typedef struct {
 
 #define slice_starts_with(s1, s2)               \
     _Generic((s2),                              \
-             char: slice_starts_with_char,      \
              int: slice_starts_with_char,       \
+             char: slice_starts_with_char,      \
+             char *: slice_starts_with_str,     \
              Slice: slice_starts_with_slice     \
              )(s1, s2)
 
 #define slice_ends_with(s1, s2)                 \
     _Generic((s2),                              \
-             char: slice_ends_with_char,        \
              int: slice_ends_with_char,         \
+             char: slice_ends_with_char,        \
+             char *: slice_ends_with_str,       \
              Slice: slice_ends_with_slice       \
              )(s1, s2)
 
@@ -68,7 +70,10 @@ bool    slice_starts_with_char(Slice slice, const char prefix);
 bool    slice_ends_with_char(Slice slice, const char suffix);
 
 bool    slice_starts_with_slice(Slice slice, Slice prefix);
-bool    slice_ends_with_slice(Slice slice, Slice prefix);
+bool    slice_ends_with_slice(Slice slice, Slice suffix);
+
+bool    slice_starts_with_str(Slice slice, const char *prefix);
+bool    slice_ends_with_str(Slice slice, const char *suffix);
 
 void    slice_print(Slice slice);
 void    slice_println(Slice slice);
@@ -122,6 +127,16 @@ bool slice_ends_with_slice(Slice slice, Slice suffix)
     if (suffix.len > slice.len) return false;
     Slice actual = slice_new_size(slice.string + (slice.len - suffix.len), suffix.len);
     return slice_eq_slice(suffix, actual);
+}
+
+bool slice_starts_with_str(Slice slice, const char *prefix)
+{
+    return slice_starts_with_slice(slice, slice_new(prefix));
+}
+
+bool slice_ends_with_str(Slice slice, const char *suffix)
+{
+    return slice_ends_with_slice(slice, slice_new(suffix));
 }
 
 Slice slice_until_delim(Slice *slice, const char delim)
