@@ -62,6 +62,7 @@ typedef struct {
 Slice   slice_new_size(const char *string, size_t len);
 Slice   slice_new(const char *string);
 Slice   slice_trim(Slice slice, int direction); // -1 To trim left, +1 to trim right and 0 to trim both
+Slice   slice_until_delim(Slice *slice, const char delim);
 
 bool    slice_eq_slice(Slice s1, Slice s2);
 bool    slice_eq_str(Slice s1, const char *s2);
@@ -97,7 +98,7 @@ Slice slice_new(const char *string)
 
 bool slice_eq_slice(Slice s1, Slice s2)
 {
-    return (s1.len != s2.len) ? false : memcmp(s1.string, s2.string, s1.len) == 0;
+    return s1.len == s2.len && memcmp(s1.string, s2.string, s1.len) == 0;
 }
 
 bool slice_eq_str(Slice s1, const char *s2)
@@ -107,12 +108,12 @@ bool slice_eq_str(Slice s1, const char *s2)
 
 bool slice_starts_with_char(Slice slice, const char prefix)
 {
-    return slice.string[0] == prefix;
+    return slice.len > 0 && slice.string[0] == prefix;
 }
 
 bool slice_ends_with_char(Slice slice, const char suffix)
 {
-    return slice.string[slice.len - 1] == suffix;
+    return slice.len > 0 && slice.string[slice.len - 1] == suffix;
 }
 
 bool slice_starts_with_slice(Slice slice, Slice prefix)
