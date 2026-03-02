@@ -15,6 +15,12 @@ int main()
         assert(!slice_eq_str(s1, "not slice 1"));
     }
     {
+        Slice s1 = slice_new("s");
+
+        assert(slice_eq_char(s1, 's'));
+        assert(!slice_eq_char(s1, 'S'));
+    }
+    {
         Slice s1 = slice_new("slice 1 test from slice 1");
         s1 = slice_until_delim(&s1, ' ');
 

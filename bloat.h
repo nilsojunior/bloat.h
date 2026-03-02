@@ -109,6 +109,11 @@ bool slice_eq_str(Slice s1, const char *s2)
     return slice_eq_slice(s1, slice_new(s2));
 }
 
+bool slice_eq_char(Slice s1, const char s2)
+{
+    return s1.len == 1 && s1.string[0] == s2;
+}
+
 bool slice_starts_with_char(Slice slice, const char prefix)
 {
     return slice.len > 0 && slice.string[0] == prefix;
