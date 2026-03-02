@@ -8,17 +8,22 @@ int main()
         Slice s1 = slice_new("slice 1 test from slice 1");
         Slice s2 = slice_new("not slice 1");
 
-        assert(slice_eq(s1, s1));
+        assert(slice_eq(s1, "slice 1 test from slice 1"));
         assert(!slice_eq(s1, s2));
 
-        assert(slice_eq_str(s1, "slice 1 test from slice 1"));
-        assert(!slice_eq_str(s1, "not slice 1"));
+        assert(slice_eq_ignorecase(s1, "slice 1 test from slice 1"));
+        assert(slice_eq_ignorecase(s1, "Slice 1 Test From Slice 1"));
+        assert(!slice_eq_ignorecase(s1, " slice 1 test from slice 1"));
     }
     {
         Slice s1 = slice_new("s");
 
-        assert(slice_eq_char(s1, 's'));
-        assert(!slice_eq_char(s1, 'S'));
+        assert(slice_eq(s1, 's'));
+        assert(!slice_eq(s1, 'S'));
+
+        assert(slice_eq_ignorecase(s1, 'S'));
+        assert(slice_eq_ignorecase(s1, 's'));
+        assert(!slice_eq_ignorecase(s1, 'f'));
     }
     {
         Slice s1 = slice_new("slice 1 test from slice 1");
