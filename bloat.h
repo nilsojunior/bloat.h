@@ -104,6 +104,10 @@ void string_to_uppercase(char *string);
 bool string_eq(const char *s1, const char *s2);
 bool string_eq_ignorecase(const char *s1, const char *s2);
 
+// FS
+long fs_get_size(const char *file_path); // Returns the size of the file, without the null terminator
+bool fs_to_string(const char *file_path, char *buffer, size_t size); // Returns a null terminated string with the contents of the file
+
 #endif // BLOAT_H
 
 #ifdef BLOAT_IMPLEMENTATION
@@ -276,6 +280,47 @@ bool string_eq_ignorecase(const char *s1, const char *s2)
         s2++;
     }
     return *s1 == *s2;
+}
+
+long fs_get_size(const char *file_path)
+{
+    long result = 0;
+    FILE *f = NULL;
+
+    f = fopen(file_path, "rb");
+    if (f == NULL) DEFER(0);
+
+    if (fseek(f, 0, SEEK_END)) DEFER(0);
+
+    result = ftell(f);
+    if (result < 0) DEFER(0);
+
+ defer:
+    if (f) fclose(f);
+
+    if (result == 0) fprintf(stderr, "ERROR: Failed to get file size: %s\n", strerror(errno));
+
+    return result;
+}
+
+bool fs_to_string(const char *file_path, char *buffer, size_t size)
+{
+    bool result = true;
+    FILE *f = NULL;
+
+    f = fopen(file_path, "rb");
+    if (f == NULL) DEFER(false);
+
+    if (fread(buffer, 1, size, f) != size) DEFER(false);
+    if (ferror(f)) DEFER(false); // FIX: This does not set errno
+
+    buffer[size] = '\0';
+
+ defer:
+    if (f) fclose(f);
+
+    if (!result) fprintf(stderr, "ERROR: Failed to read file: %s\n", strerror(errno));
+    return result;
 }
 
 #endif // BLOAT_IMPLEMENTATION
