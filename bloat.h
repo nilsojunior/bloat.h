@@ -99,14 +99,15 @@ void    slice_print(Slice slice);
 void    slice_println(Slice slice);
 
 // C Strings
-void string_to_lowercase(char *string);
-void string_to_uppercase(char *string);
-bool string_eq(const char *s1, const char *s2);
-bool string_eq_ignorecase(const char *s1, const char *s2);
+void    string_to_lowercase(char *string);
+void    string_to_uppercase(char *string);
+bool    string_eq(const char *s1, const char *s2);
+bool    string_eq_ignorecase(const char *s1, const char *s2);
 
 // FS
-long fs_get_size(const char *file_path); // Returns the size of the file, without the null terminator
-bool fs_to_string(const char *file_path, char *buffer, size_t size); // Returns a null terminated string with the contents of the file
+FILE*   fs_open(const char *file_name, const char *mode); // TODO: Maybe add a should crash flag or another function to do that
+long    fs_get_size(FILE *stream); // Returns the size of the file, without the null terminator
+bool    fs_to_string(FILE *stream, char *buffer, size_t size); // Returns a null terminated string with the contents of the file
 
 #endif // BLOAT_H
 
@@ -282,45 +283,45 @@ bool string_eq_ignorecase(const char *s1, const char *s2)
     return *s1 == *s2;
 }
 
-long fs_get_size(const char *file_path)
+FILE* fs_open(const char *file_name, const char *mode)
+{
+    FILE *f = fopen(file_name, mode);
+    if (f == NULL) {
+        fprintf(stderr, "ERROR: Failed to open file `%s`: %s\n", file_name, strerror(errno));
+        return NULL;
+    }
+    return f;
+}
+
+long fs_get_size(FILE *stream)
 {
     long result = 0;
-    FILE *f = NULL;
 
-    f = fopen(file_path, "rb");
-    if (f == NULL) DEFER(0);
+    if (fseek(stream, 0, SEEK_END)) DEFER(0);
 
-    if (fseek(f, 0, SEEK_END)) DEFER(0);
-
-    result = ftell(f);
+    result = ftell(stream);
     if (result < 0) DEFER(0);
+    rewind(stream);
 
  defer:
-    if (f) fclose(f);
-
     if (result == 0) fprintf(stderr, "ERROR: Failed to get file size: %s\n", strerror(errno));
 
     return result;
 }
 
-bool fs_to_string(const char *file_path, char *buffer, size_t size)
+bool fs_to_string(FILE *stream, char *buffer, size_t size)
 {
-    bool result = true;
-    FILE *f = NULL;
-
-    f = fopen(file_path, "rb");
-    if (f == NULL) DEFER(false);
-
-    if (fread(buffer, 1, size, f) != size) DEFER(false);
-    if (ferror(f)) DEFER(false); // FIX: This does not set errno
+    if (fread(buffer, 1, size, stream) != size) {
+        fprintf(stderr, "ERROR: Failed to read file: %s\n", strerror(errno));
+        return false;
+    }
+    if (ferror(stream)) {
+        fprintf(stderr, "ERROR: Failed to read file\n");
+        return false;
+    }
 
     buffer[size] = '\0';
-
- defer:
-    if (f) fclose(f);
-
-    if (!result) fprintf(stderr, "ERROR: Failed to read file: %s\n", strerror(errno));
-    return result;
+    return true;
 }
 
 #endif // BLOAT_IMPLEMENTATION

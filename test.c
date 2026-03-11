@@ -87,16 +87,13 @@ int main()
         assert(!slice_ends_with(s1, "1 "));
     }
     {
-        const char *file_path = "testfile";
-        long size = fs_get_size(file_path);
-        char buffer[size + 1]; // Null terminator
-
-        if (!fs_to_string(file_path, buffer, size)) {
-            fprintf(stderr, "ERROR: Failed to read file: `%s`\n", file_path);
-            return -1;
-        }
+        FILE *f = fs_open("testfile", "rb");
+        size_t size = fs_get_size(f);
+        char buffer[size + 1];
+        fs_to_string(f, buffer, size);
 
         assert(string_eq(buffer, "This is a testfile\n"));
+        fclose(f);
     }
 
     return 0;
