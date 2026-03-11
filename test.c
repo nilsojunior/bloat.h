@@ -90,9 +90,10 @@ int main()
         FILE *f = fs_open("testfile", "rb");
         size_t size = fs_get_size(f);
         char buffer[size + 1];
-        fs_to_string(f, buffer, size);
+        fs_to_string(f, buffer);
 
         assert(string_eq(buffer, "This is a testfile\n"));
+
         fclose(f);
     }
 

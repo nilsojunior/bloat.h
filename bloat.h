@@ -105,9 +105,11 @@ bool    string_eq(const char *s1, const char *s2);
 bool    string_eq_ignorecase(const char *s1, const char *s2);
 
 // FS
+#define fs_to_string(stream, buffer) fs_to_string_size((stream), (buffer), sizeof(buffer) - 1) // This expect the size of the buffer to be the file size + null terminator
+
 FILE*   fs_open(const char *file_name, const char *mode); // TODO: Maybe add a should crash flag or another function to do that
 long    fs_get_size(FILE *stream); // Returns the size of the file, without the null terminator
-bool    fs_to_string(FILE *stream, char *buffer, size_t size); // Returns a null terminated string with the contents of the file
+bool    fs_to_string_size(FILE *stream, char *buffer, size_t size); // Returns a null terminated string with the contents of the file
 
 #endif // BLOAT_H
 
@@ -309,7 +311,7 @@ long fs_get_size(FILE *stream)
     return result;
 }
 
-bool fs_to_string(FILE *stream, char *buffer, size_t size)
+bool fs_to_string_size(FILE *stream, char *buffer, size_t size)
 {
     if (fread(buffer, 1, size, stream) != size) {
         fprintf(stderr, "ERROR: Failed to read file: %s\n", strerror(errno));
