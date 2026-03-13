@@ -37,7 +37,7 @@ typedef struct {
     size_t len;
 } Slice;
 
-#define SLICE_FMT "%s.*"
+#define SLICE_FMT "%.*s"
 #define SLICE_ARG(slice) (int)slice.len, slice.string
 
 #define slice_starts_with(s1, s2)               \
