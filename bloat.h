@@ -11,7 +11,7 @@
 
 #define DEFER(value) do { return (value); goto defer; } while(0)
 
-#define PI 3.14159265358979323846f
+#define SIZEOF(array) sizeof((array)) / sizeof((array[0]))
 
 #define vector_define(T, Name)                  \
     typedef struct {                            \

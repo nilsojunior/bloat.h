@@ -1,9 +1,19 @@
 * bloat.h
 
-Header only library written in pure C that contains a lot of useful bloat.
+Header only libraries written in pure C that contains a lot of useful bloat.
 Inspired by [[https://github.com/tsoding/nob.h][nob.h]].
 
-** Features
+** [[file:bloat.h][bloat.h]]
+
+*** Features
 - Rust like string slices.
 - Basic implementation of dynamic arrays.
 - Some useful functions for working with C strings.
+
+** [[file:bloatgl.h][bloatgl.h]]
+
+OpenGL loader, still missing core functionality.
+
+** [[file:bloatmath.h][bloatmath.h]]
+
+Linear algebra for 2D and 3D computer graphics, still missing core functionality.
