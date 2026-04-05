@@ -13,6 +13,8 @@
 
 #define SIZEOF(array) sizeof((array)) / sizeof((array[0]))
 
+#define FOREACH(i, array) for (size_t (i) = 0; (i) < sizeof((array)) / sizeof((array)[0]); (i)++)
+
 #define vector_define(T, Name)                  \
     typedef struct {                            \
         T *items;                               \
