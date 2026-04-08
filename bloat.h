@@ -17,7 +17,7 @@
 
 #define SIZEOF(array) sizeof((array)) / sizeof((array[0]))
 
-#define FOREACH(i, array) for (size_t (i) = 0; (i) < sizeof((array)) / sizeof((array)[0]); (i)++)
+#define FOREACH(i, array) for (size_t (i) = 0; (i) < sizeof((array)) / sizeof((array)[0]); ++(i))
 
 #define vector_define(T, Name)                  \
     typedef struct {                            \
@@ -152,7 +152,7 @@ BLOATDEF bool slice_eq_slice(Slice s1, Slice s2)
 BLOATDEF bool slice_eq_slice_ignorecase(Slice s1, Slice s2)
 {
     if (s1.len != s2.len) return false;
-    for (size_t i = 0; i < s1.len; i++) {
+    for (size_t i = 0; i < s1.len; ++i) {
         char c1 = char_to_lowercase(s1.string[i]);
         char c2 = char_to_lowercase(s2.string[i]);
         if (c1 != c2) return false;
@@ -215,11 +215,11 @@ BLOATDEF bool slice_ends_with_str(Slice slice, const char *suffix)
 BLOATDEF Slice slice_until_delim(Slice *slice, const char delim)
 {
     size_t i = 0;
-    while (i < slice->len && slice->string[i] != delim) i++;
+    while (i < slice->len && slice->string[i] != delim) ++i;
 
     Slice s = slice_new_size(slice->string, i);
 
-    if (i < slice->len) i++;
+    if (i < slice->len) ++i;
     slice->len -= i;
     slice->string += i;
 
@@ -245,7 +245,7 @@ BLOATDEF Slice slice_trim(Slice slice, int direction)
 
 BLOATDEF void slice_print(Slice slice)
 {
-    for (size_t i = 0; i < slice.len; i++) putchar(slice.string[i]);
+    for (size_t i = 0; i < slice.len; ++i) putchar(slice.string[i]);
 }
 
 BLOATDEF void slice_println(Slice slice)
