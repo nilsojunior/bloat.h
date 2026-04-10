@@ -83,8 +83,7 @@ BLOATDEF float        vec2_cross(Vector2 v1, Vector2 v2);
 BLOATDEF float        vec2_dot(Vector2 v1, Vector2 v2);
 BLOATDEF float        vec2_length_sqr(Vector2 v);
 BLOATDEF bool         vec2_eq(Vector2 v1, Vector2 v2);
-BLOATDEF bool         vec2_zero(Vector2 v);
-BLOATDEF bool         vec2_contains_zero(Vector2 v);
+BLOATDEF bool         vec2_zeroed(Vector2 v);
 
 BLOATDEF Vector3      vec3(float x, float y, float z);
 BLOATDEF Vector3      vec3_add_vec(Vector3 v1, Vector3 v2);
@@ -98,8 +97,7 @@ BLOATDEF Vector3      vec3_cross(Vector3 v1, Vector3 v2);
 BLOATDEF float        vec3_dot(Vector3 v1, Vector3 v2);
 BLOATDEF float        vec3_length_sqr(Vector3 v);
 BLOATDEF bool         vec3_eq(Vector3 v1, Vector3 v2);
-BLOATDEF bool         vec3_zero(Vector3 v);
-BLOATDEF bool         vec3_contains_zero(Vector3 v);
+BLOATDEF bool         vec3_zeroed(Vector3 v);
 
 BLOATDEF Vector4      vec4(float x, float y, float z, float w);
 
@@ -220,14 +218,9 @@ BLOATDEF float vec2_dot(Vector2 v1, Vector2 v2)
     return (v1.x*v2.x + v1.y*v2.y);
 }
 
-BLOATDEF bool vec2_zero(Vector2 v)
+BLOATDEF bool vec2_zeroed(Vector2 v)
 {
     return v.x == 0.0f && v.y == 0.0f;
-}
-
-BLOATDEF bool vec2_contains_zero(Vector2 v)
-{
-    return v.x == 0.0f || v.y == 0.0f;
 }
 
 // Vector 3
@@ -295,14 +288,9 @@ BLOATDEF bool vec3_eq(Vector3 v1, Vector3 v2)
     return float_eq(v1.x, v2.x) && float_eq(v1.y, v2.y) && float_eq(v1.z, v2.z);
 }
 
-BLOATDEF bool vec3_zero(Vector3 v)
+BLOATDEF bool vec3_zeroed(Vector3 v)
 {
     return v.x == 0.0f && v.y == 0.0f && v.z == 0.0f;
-}
-
-BLOATDEF bool vec3_contains_zero(Vector3 v)
-{
-    return v.x == 0.0f || v.y == 0.0f || v.z == 0.0f;
 }
 
 BLOATDEF Vector3 vec3_normalize(Vector3 v)
