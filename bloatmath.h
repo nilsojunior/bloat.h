@@ -20,6 +20,8 @@ typedef struct {
     float x, y, z, w;
 } Vector4;
 
+typedef Vector4 Quaternion;
+
 // 4x4 Matrix
 typedef struct {
     float m0, m4, m8 , m12;
@@ -100,6 +102,19 @@ BLOATDEF bool         vec3_eq(Vector3 v1, Vector3 v2);
 BLOATDEF bool         vec3_zeroed(Vector3 v);
 
 BLOATDEF Vector4      vec4(float x, float y, float z, float w);
+
+BLOATDEF Quaternion   quat(void);
+BLOATDEF Quaternion   quat_add_quat(Quaternion q1, Quaternion q2);
+BLOATDEF Quaternion   quat_add_value(Quaternion q, float value);
+BLOATDEF Quaternion   quat_sub_quat(Quaternion q1, Quaternion q2);
+BLOATDEF Quaternion   quat_sub_value(Quaternion q, float value);
+BLOATDEF Quaternion   quat_scale(Quaternion q, float scale);
+BLOATDEF Quaternion   quat_normalize(Quaternion q);
+BLOATDEF Quaternion   quat_negate(Quaternion q);
+BLOATDEF float        quat_dot(Quaternion q1, Quaternion q2);
+BLOATDEF float        quat_length_sqr(Quaternion q);
+BLOATDEF bool         quat_eq(Quaternion q1, Quaternion q2);
+BLOATDEF bool         quat_zeroed(Quaternion q);
 
 BLOATDEF Matrix       mat_value(float value);
 BLOATDEF Matrix       mat_translate(Vector3 v);
@@ -337,6 +352,111 @@ BLOATDEF Vector4 vec4(float x, float y, float z, float w)
         .z = z,
         .w = w,
     };
+}
+
+// Quaternion
+BLOATDEF Quaternion quat(void)
+{
+    return (Quaternion) {
+        .x = 0.0f,
+        .y = 0.0f,
+        .z = 0.0f,
+        .w = 1.0f,
+    };
+}
+
+BLOATDEF Quaternion quat_add_quat(Quaternion q1, Quaternion q2)
+{
+    return (Quaternion) {
+        .x = q1.x + q2.x,
+        .y = q1.y + q2.y,
+        .z = q1.z + q2.z,
+        .w = q1.w + q2.w,
+    };
+}
+
+BLOATDEF Quaternion quat_add_value(Quaternion q, float value)
+{
+    return (Quaternion) {
+        .x = q.x + value,
+        .y = q.y + value,
+        .z = q.z + value,
+        .w = q.w + value,
+    };
+}
+
+BLOATDEF Quaternion quat_sub_quat(Quaternion q1, Quaternion q2)
+{
+    return (Quaternion) {
+        .x = q1.x - q2.x,
+        .y = q1.y - q2.y,
+        .z = q1.z - q2.z,
+        .w = q1.w - q2.w,
+    };
+}
+
+BLOATDEF Quaternion quat_sub_value(Quaternion q, float value)
+{
+    return (Quaternion) {
+        .x = q.x - value,
+        .y = q.y - value,
+        .z = q.z - value,
+        .w = q.w - value,
+    };
+}
+
+BLOATDEF Quaternion quat_scale(Quaternion q, float scale)
+{
+    return (Quaternion) {
+        .x = q.x * scale,
+        .y = q.y * scale,
+        .z = q.z * scale,
+        .w = q.w * scale,
+    };
+}
+
+BLOATDEF float quat_length_sqr(Quaternion q)
+{
+    return (q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w);
+}
+
+BLOATDEF Quaternion quat_normalize(Quaternion q)
+{
+    float length = sqrtf(quat_length_sqr(q));
+
+    if (length == 0.0f) length = 1.0f; 
+    float i_length = 1.0f/length;
+
+    return (Quaternion) {
+        .x = q.x * i_length,
+        .y = q.y * i_length,
+        .z = q.z * i_length,
+        .w = q.w * i_length,
+    };
+}
+BLOATDEF Quaternion quat_negate(Quaternion q)
+{
+    return (Quaternion) {
+        .x = -q.x,
+        .y = -q.y,
+        .z = -q.z,
+        .w = -q.w,
+    };
+}
+
+BLOATDEF float quat_dot(Quaternion q1, Quaternion q2)
+{
+    return (q1.x*q2.x + q1.y*q2.y + q1.z*q2.z + q1.w*q2.w);
+}
+
+BLOATDEF bool quat_eq(Quaternion q1, Quaternion q2)
+{
+    return float_eq(q1.x, q2.x) && float_eq(q1.y, q2.y) && float_eq(q1.z, q2.z) && float_eq(q1.w, q2.w);
+}
+
+BLOATDEF bool quat_zeroed(Quaternion q)
+{
+    return q.x == 0.0f && q.y == 0.0f && q.z == 0.0f && q.w == 0.0f;
 }
 
 // Matrix
