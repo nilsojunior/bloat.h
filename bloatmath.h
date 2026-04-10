@@ -187,17 +187,15 @@ BLOATDEF bool vec2_eq(Vector2 v1, Vector2 v2)
 
 BLOATDEF Vector2 vec2_normalize(Vector2 v)
 {
-    float length_sqr = vec2_length_sqr(v);
+    float length = sqrtf(vec2_length_sqr(v));
 
-    if ((length_sqr != 1.0f) && (length_sqr != 0.0f)) {
-        float i_length = 1.0f/sqrtf(length_sqr);
+    if (length == 0.0f) lenght = 1.0f;
+    float i_length = 1.0f/length;
+
         return (Vector2) {
             .x = v.x * i_length,
             .y = v.y * i_length,
         };
-    }
-
-    return v;
 }
 
 BLOATDEF Vector2 vec2_negate(Vector2 v)
@@ -295,18 +293,16 @@ BLOATDEF bool vec3_zeroed(Vector3 v)
 
 BLOATDEF Vector3 vec3_normalize(Vector3 v)
 {
-    float length_sqr = vec3_length_sqr(v);
+    float length = sqrtf(vec3_length_sqr(v));
 
-    if ((length_sqr != 1.0f) && (length_sqr != 0.0f)) {
-        float i_length = 1.0f/sqrtf(length_sqr);
-        return (Vector3) {
-            .x = v.x * i_length,
-            .y = v.y * i_length,
-            .z = v.z * i_length,
-        };
-    }
+    if (length == 0.0f) length = 1.0f;
+    float i_length = 1.0f/length;
 
-    return v;
+    return (Vector3) {
+        .x = v.x * i_length,
+        .y = v.y * i_length,
+        .z = v.z * i_length,
+    };
 }
 
 BLOATDEF Vector3 vec3_negate(Vector3 v)
