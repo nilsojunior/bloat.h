@@ -1,5 +1,5 @@
-#ifndef BLOAT_GL_H
-#define BLOAT_GL_H
+#ifndef BLOATGL_H
+#define BLOATGL_H
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -50,14 +50,17 @@ typedef gl_loader_proc (*gl_get_proc_address)(const char *name);
     X(PFNGLENABLEPROC,                   glEnable)                  \
     X(PFNGLPOLYGONMODEPROC,              glPolygonMode)
 
-
-#define X(type, name) static type name;
+#define X(type, name) extern type name;
 GL_FUNCS(X);
 #undef X
 
-#endif // BLOAT_GL_H
+#endif // BLOATGL_H
 
-#ifdef BLOAT_GL_IMPLEMENTATION
+#ifdef BLOATGL_IMPLEMENTATION
+
+#define X(type, name) type name;
+GL_FUNCS(X);
+#undef X
 
 bool gl_load(gl_get_proc_address fn)
 {
@@ -74,4 +77,4 @@ bool gl_load(gl_get_proc_address fn)
     return result;
 }
 
-#endif // BLOAT_GL_IMPLEMENTATION
+#endif // BLOATGL_IMPLEMENTATION
