@@ -1,6 +1,18 @@
 #ifndef BLOAT_H
 #define BLOAT_H
 
+#if defined(BLOAT_IMPLEMENTATION) && defined(BLOAT_STATIC_INLINE)
+    #error "Please specify only one between `BLOAT_IMPLEMENTATION` and `BLOAT_STATIC_INLINE`"
+#endif
+
+#if defined(BLOAT_STATIC_INLINE)
+    #define BLOATDEF static inline
+#elif defined(BLOAT_IMPLEMENTATION)
+    #define BLOATDEF
+#else
+    #define BLOATDEF extern
+#endif
+
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -8,10 +20,6 @@
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
-
-#ifndef BLOATDEF
-#define BLOATDEF static inline
-#endif // BLOATDEF
 
 #define DEFER(value) do { return (value); goto defer; } while(0)
 
@@ -119,7 +127,7 @@ BLOATDEF bool    fs_to_string_size(FILE *stream, char *buffer, size_t size); // 
 
 #endif // BLOAT_H
 
-#ifdef BLOAT_IMPLEMENTATION
+#if defined(BLOAT_STATIC_INLINE) || defined(BLOAT_IMPLEMENTATION)
 
 BLOATDEF char char_to_lowercase(char c)
 {
@@ -332,4 +340,4 @@ BLOATDEF bool fs_to_string_size(FILE *stream, char *buffer, size_t size)
     return true;
 }
 
-#endif // BLOAT_IMPLEMENTATION
+#endif // BLOAT_STATIC_INLINE || BLOAT_IMPLEMENTATION

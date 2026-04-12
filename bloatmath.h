@@ -1,12 +1,20 @@
-#ifndef BLOAT_MATH_H
-#define BLOAT_MATH_H
+#ifndef BLOATMATH_H
+#define BLOATMATH_H
+
+#if defined(BLOATMATH_IMPLEMENTATION) && defined(BLOATMATH_STATIC_INLINE)
+    #error "Please specify only one between `BLOATMATH_IMPLEMENTATION` and `BLOATMATH_STATIC_INLINE`"
+#endif
+
+#if defined(BLOATMATH_STATIC_INLINE)
+    #define BLOATMDEF static inline
+#elif defined(BLOATMATH_IMPLEMENTATION)
+    #define BLOATMDEF
+#else
+    #define BLOATMDEF extern
+#endif
 
 #include <stdbool.h>
 #include <math.h>
-
-#ifndef BLOATDEF
-#define BLOATDEF static inline
-#endif // BLOATDEF
 
 typedef struct {
     float x, y;
@@ -70,79 +78,79 @@ typedef struct { float mat[16]; } MatrixLayout;
              Vector3: vec3_sub_vec              \
              )(v, value)
 
-BLOATDEF float        clamp(float value, float min, float max);
-BLOATDEF bool         float_eq(float x, float y);
+BLOATMDEF float        clamp(float value, float min, float max);
+BLOATMDEF bool         float_eq(float x, float y);
 
-BLOATDEF Vector2      vec2(float x, float y);
-BLOATDEF Vector2      vec2_add_vec(Vector2 v1, Vector2 v2);
-BLOATDEF Vector2      vec2_add_value(Vector2 v, float value);
-BLOATDEF Vector2      vec2_sub_vec(Vector2 v1, Vector2 v2);
-BLOATDEF Vector2      vec2_sub_value(Vector2 v, float value);
-BLOATDEF Vector2      vec2_scale(Vector2 v, float scale);
-BLOATDEF Vector2      vec2_normalize(Vector2 v);
-BLOATDEF Vector2      vec2_negate(Vector2 v);
-BLOATDEF float        vec2_cross(Vector2 v1, Vector2 v2);
-BLOATDEF float        vec2_dot(Vector2 v1, Vector2 v2);
-BLOATDEF float        vec2_length_sqr(Vector2 v);
-BLOATDEF bool         vec2_eq(Vector2 v1, Vector2 v2);
-BLOATDEF bool         vec2_zeroed(Vector2 v);
+BLOATMDEF Vector2      vec2(float x, float y);
+BLOATMDEF Vector2      vec2_add_vec(Vector2 v1, Vector2 v2);
+BLOATMDEF Vector2      vec2_add_value(Vector2 v, float value);
+BLOATMDEF Vector2      vec2_sub_vec(Vector2 v1, Vector2 v2);
+BLOATMDEF Vector2      vec2_sub_value(Vector2 v, float value);
+BLOATMDEF Vector2      vec2_scale(Vector2 v, float scale);
+BLOATMDEF Vector2      vec2_normalize(Vector2 v);
+BLOATMDEF Vector2      vec2_negate(Vector2 v);
+BLOATMDEF float        vec2_cross(Vector2 v1, Vector2 v2);
+BLOATMDEF float        vec2_dot(Vector2 v1, Vector2 v2);
+BLOATMDEF float        vec2_length_sqr(Vector2 v);
+BLOATMDEF bool         vec2_eq(Vector2 v1, Vector2 v2);
+BLOATMDEF bool         vec2_zeroed(Vector2 v);
 
-BLOATDEF Vector3      vec3(float x, float y, float z);
-BLOATDEF Vector3      vec3_add_vec(Vector3 v1, Vector3 v2);
-BLOATDEF Vector3      vec3_add_value(Vector3 v, float value);
-BLOATDEF Vector3      vec3_sub_vec(Vector3 v1, Vector3 v2);
-BLOATDEF Vector3      vec3_sub_value(Vector3 v, float value);
-BLOATDEF Vector3      vec3_scale(Vector3 v, float scale);
-BLOATDEF Vector3      vec3_normalize(Vector3 v);
-BLOATDEF Vector3      vec3_negate(Vector3 v);
-BLOATDEF Vector3      vec3_cross(Vector3 v1, Vector3 v2);
-BLOATDEF float        vec3_dot(Vector3 v1, Vector3 v2);
-BLOATDEF float        vec3_length_sqr(Vector3 v);
-BLOATDEF bool         vec3_eq(Vector3 v1, Vector3 v2);
-BLOATDEF bool         vec3_zeroed(Vector3 v);
+BLOATMDEF Vector3      vec3(float x, float y, float z);
+BLOATMDEF Vector3      vec3_add_vec(Vector3 v1, Vector3 v2);
+BLOATMDEF Vector3      vec3_add_value(Vector3 v, float value);
+BLOATMDEF Vector3      vec3_sub_vec(Vector3 v1, Vector3 v2);
+BLOATMDEF Vector3      vec3_sub_value(Vector3 v, float value);
+BLOATMDEF Vector3      vec3_scale(Vector3 v, float scale);
+BLOATMDEF Vector3      vec3_normalize(Vector3 v);
+BLOATMDEF Vector3      vec3_negate(Vector3 v);
+BLOATMDEF Vector3      vec3_cross(Vector3 v1, Vector3 v2);
+BLOATMDEF float        vec3_dot(Vector3 v1, Vector3 v2);
+BLOATMDEF float        vec3_length_sqr(Vector3 v);
+BLOATMDEF bool         vec3_eq(Vector3 v1, Vector3 v2);
+BLOATMDEF bool         vec3_zeroed(Vector3 v);
 
-BLOATDEF Vector4      vec4(float x, float y, float z, float w);
+BLOATMDEF Vector4      vec4(float x, float y, float z, float w);
 
-BLOATDEF Quaternion   quat(void);
-BLOATDEF Quaternion   quat_add_quat(Quaternion q1, Quaternion q2);
-BLOATDEF Quaternion   quat_add_value(Quaternion q, float value);
-BLOATDEF Quaternion   quat_sub_quat(Quaternion q1, Quaternion q2);
-BLOATDEF Quaternion   quat_sub_value(Quaternion q, float value);
-BLOATDEF Quaternion   quat_scale(Quaternion q, float scale);
-BLOATDEF Quaternion   quat_normalize(Quaternion q);
-BLOATDEF Quaternion   quat_negate(Quaternion q);
-BLOATDEF float        quat_dot(Quaternion q1, Quaternion q2);
-BLOATDEF float        quat_length_sqr(Quaternion q);
-BLOATDEF bool         quat_eq(Quaternion q1, Quaternion q2);
-BLOATDEF bool         quat_zeroed(Quaternion q);
+BLOATMDEF Quaternion   quat(void);
+BLOATMDEF Quaternion   quat_add_quat(Quaternion q1, Quaternion q2);
+BLOATMDEF Quaternion   quat_add_value(Quaternion q, float value);
+BLOATMDEF Quaternion   quat_sub_quat(Quaternion q1, Quaternion q2);
+BLOATMDEF Quaternion   quat_sub_value(Quaternion q, float value);
+BLOATMDEF Quaternion   quat_scale(Quaternion q, float scale);
+BLOATMDEF Quaternion   quat_normalize(Quaternion q);
+BLOATMDEF Quaternion   quat_negate(Quaternion q);
+BLOATMDEF float        quat_dot(Quaternion q1, Quaternion q2);
+BLOATMDEF float        quat_length_sqr(Quaternion q);
+BLOATMDEF bool         quat_eq(Quaternion q1, Quaternion q2);
+BLOATMDEF bool         quat_zeroed(Quaternion q);
 
-BLOATDEF Matrix       mat_value(float value);
-BLOATDEF Matrix       mat_translate(Vector3 v);
-BLOATDEF Matrix       mat_multiply(Matrix left, Matrix right);
-BLOATDEF Matrix       mat_rotate(Vector3 axis, float angle);
-BLOATDEF Matrix       mat_scale(Vector3 v);
-BLOATDEF Matrix       mat_perspective(float fov, float aspect, float near, float far);
-BLOATDEF Matrix       mat_look_at(Vector3 eye, Vector3 target, Vector3 up);
-BLOATDEF MatrixLayout mat_flatten(Matrix m);
+BLOATMDEF Matrix       mat_value(float value);
+BLOATMDEF Matrix       mat_translate(Vector3 v);
+BLOATMDEF Matrix       mat_multiply(Matrix left, Matrix right);
+BLOATMDEF Matrix       mat_rotate(Vector3 axis, float angle);
+BLOATMDEF Matrix       mat_scale(Vector3 v);
+BLOATMDEF Matrix       mat_perspective(float fov, float aspect, float near, float far);
+BLOATMDEF Matrix       mat_look_at(Vector3 eye, Vector3 target, Vector3 up);
+BLOATMDEF MatrixLayout mat_flatten(Matrix m);
 
-#endif // BLOAT_MATH_H
+#endif // BLOATMATH_H
 
-#ifdef BLOAT_MATH_IMPLEMENTATION
+#if defined(BLOATMATH_STATIC_INLINE) || defined(BLOATMATH_IMPLEMENTATION)
 
-BLOATDEF float clamp(float value, float min, float max)
+BLOATMDEF float clamp(float value, float min, float max)
 {
     if (value < min) return min;
     if (value > max) return max;
     return value;
 }
 
-BLOATDEF bool float_eq(float x, float y)
+BLOATMDEF bool float_eq(float x, float y)
 {
     return (fabsf(x - y)) <= (EPSILON*fmaxf(1.0f, fmaxf(fabsf(x), fabsf(y))));
 }
 
 // Vector 2
-BLOATDEF Vector2 vec2(float x, float y)
+BLOATMDEF Vector2 vec2(float x, float y)
 {
     return (Vector2) {
         .x = x,
@@ -150,7 +158,7 @@ BLOATDEF Vector2 vec2(float x, float y)
     };
 }
 
-BLOATDEF Vector2 vec2_add_vec(Vector2 v1, Vector2 v2)
+BLOATMDEF Vector2 vec2_add_vec(Vector2 v1, Vector2 v2)
 {
     return (Vector2) {
         .x = v1.x + v2.x,
@@ -158,7 +166,7 @@ BLOATDEF Vector2 vec2_add_vec(Vector2 v1, Vector2 v2)
     };
 }
 
-BLOATDEF Vector2 vec2_add_value(Vector2 v, float value)
+BLOATMDEF Vector2 vec2_add_value(Vector2 v, float value)
 {
     return (Vector2) {
         .x = v.x + value,
@@ -166,7 +174,7 @@ BLOATDEF Vector2 vec2_add_value(Vector2 v, float value)
     };
 }
 
-BLOATDEF Vector2 vec2_sub_vec(Vector2 v1, Vector2 v2)
+BLOATMDEF Vector2 vec2_sub_vec(Vector2 v1, Vector2 v2)
 {
     return (Vector2) {
         .x = v1.x - v2.x,
@@ -174,7 +182,7 @@ BLOATDEF Vector2 vec2_sub_vec(Vector2 v1, Vector2 v2)
     };
 }
 
-BLOATDEF Vector2 vec2_sub_value(Vector2 v, float value)
+BLOATMDEF Vector2 vec2_sub_value(Vector2 v, float value)
 {
     return (Vector2) {
         .x = v.x - value,
@@ -182,7 +190,7 @@ BLOATDEF Vector2 vec2_sub_value(Vector2 v, float value)
     };
 }
 
-BLOATDEF Vector2 vec2_scale(Vector2 v, float scale)
+BLOATMDEF Vector2 vec2_scale(Vector2 v, float scale)
 {
     return (Vector2) {
         .x = v.x * scale,
@@ -190,30 +198,30 @@ BLOATDEF Vector2 vec2_scale(Vector2 v, float scale)
     };
 }
 
-BLOATDEF float vec2_length_sqr(Vector2 v)
+BLOATMDEF float vec2_length_sqr(Vector2 v)
 {
     return v.x*v.x + v.y*v.y;
 }
 
-BLOATDEF bool vec2_eq(Vector2 v1, Vector2 v2)
+BLOATMDEF bool vec2_eq(Vector2 v1, Vector2 v2)
 {
     return float_eq(v1.x, v2.x) && float_eq(v2.x, v2.y);
 }
 
-BLOATDEF Vector2 vec2_normalize(Vector2 v)
+BLOATMDEF Vector2 vec2_normalize(Vector2 v)
 {
     float length = sqrtf(vec2_length_sqr(v));
 
-    if (length == 0.0f) lenght = 1.0f;
+    if (length == 0.0f) length = 1.0f;
     float i_length = 1.0f/length;
 
-        return (Vector2) {
-            .x = v.x * i_length,
-            .y = v.y * i_length,
-        };
+    return (Vector2) {
+        .x = v.x * i_length,
+        .y = v.y * i_length,
+    };
 }
 
-BLOATDEF Vector2 vec2_negate(Vector2 v)
+BLOATMDEF Vector2 vec2_negate(Vector2 v)
 {
     return (Vector2) {
         .x = -v.x,
@@ -221,23 +229,23 @@ BLOATDEF Vector2 vec2_negate(Vector2 v)
     };
 }
 
-BLOATDEF float vec2_cross(Vector2 v1, Vector2 v2)
+BLOATMDEF float vec2_cross(Vector2 v1, Vector2 v2)
 {
     return (v1.x*v2.y - v1.y*v2.x);
 }
 
-BLOATDEF float vec2_dot(Vector2 v1, Vector2 v2)
+BLOATMDEF float vec2_dot(Vector2 v1, Vector2 v2)
 {
     return (v1.x*v2.x + v1.y*v2.y);
 }
 
-BLOATDEF bool vec2_zeroed(Vector2 v)
+BLOATMDEF bool vec2_zeroed(Vector2 v)
 {
     return v.x == 0.0f && v.y == 0.0f;
 }
 
 // Vector 3
-BLOATDEF Vector3 vec3(float x, float y, float z)
+BLOATMDEF Vector3 vec3(float x, float y, float z)
 {
     return (Vector3) {
         .x = x,
@@ -246,7 +254,7 @@ BLOATDEF Vector3 vec3(float x, float y, float z)
     };
 }
 
-BLOATDEF Vector3 vec3_add_vec(Vector3 v1, Vector3 v2)
+BLOATMDEF Vector3 vec3_add_vec(Vector3 v1, Vector3 v2)
 {
     return (Vector3) {
         .x = v1.x + v2.x,
@@ -255,7 +263,7 @@ BLOATDEF Vector3 vec3_add_vec(Vector3 v1, Vector3 v2)
     };
 }
 
-BLOATDEF Vector3 vec3_add_value(Vector3 v, float value)
+BLOATMDEF Vector3 vec3_add_value(Vector3 v, float value)
 {
     return (Vector3) {
         .x = v.x + value,
@@ -264,7 +272,7 @@ BLOATDEF Vector3 vec3_add_value(Vector3 v, float value)
     };
 }
 
-BLOATDEF Vector3 vec3_sub_vec(Vector3 v1, Vector3 v2)
+BLOATMDEF Vector3 vec3_sub_vec(Vector3 v1, Vector3 v2)
 {
     return (Vector3) {
         .x = v1.x - v2.x,
@@ -273,7 +281,7 @@ BLOATDEF Vector3 vec3_sub_vec(Vector3 v1, Vector3 v2)
     };
 }
 
-BLOATDEF Vector3 vec3_sub_value(Vector3 v, float value)
+BLOATMDEF Vector3 vec3_sub_value(Vector3 v, float value)
 {
     return (Vector3) {
         .x = v.x - value,
@@ -282,7 +290,7 @@ BLOATDEF Vector3 vec3_sub_value(Vector3 v, float value)
     };
 }
 
-BLOATDEF Vector3 vec3_scale(Vector3 v, float scale)
+BLOATMDEF Vector3 vec3_scale(Vector3 v, float scale)
 {
     return (Vector3) {
         .x = v.x * scale,
@@ -291,22 +299,22 @@ BLOATDEF Vector3 vec3_scale(Vector3 v, float scale)
     };
 }
 
-BLOATDEF float vec3_length_sqr(Vector3 v)
+BLOATMDEF float vec3_length_sqr(Vector3 v)
 {
     return (v.x*v.x + v.y*v.y + v.z*v.z);
 }
 
-BLOATDEF bool vec3_eq(Vector3 v1, Vector3 v2)
+BLOATMDEF bool vec3_eq(Vector3 v1, Vector3 v2)
 {
     return float_eq(v1.x, v2.x) && float_eq(v1.y, v2.y) && float_eq(v1.z, v2.z);
 }
 
-BLOATDEF bool vec3_zeroed(Vector3 v)
+BLOATMDEF bool vec3_zeroed(Vector3 v)
 {
     return v.x == 0.0f && v.y == 0.0f && v.z == 0.0f;
 }
 
-BLOATDEF Vector3 vec3_normalize(Vector3 v)
+BLOATMDEF Vector3 vec3_normalize(Vector3 v)
 {
     float length = sqrtf(vec3_length_sqr(v));
 
@@ -320,7 +328,7 @@ BLOATDEF Vector3 vec3_normalize(Vector3 v)
     };
 }
 
-BLOATDEF Vector3 vec3_negate(Vector3 v)
+BLOATMDEF Vector3 vec3_negate(Vector3 v)
 {
     return (Vector3) {
         .x = -v.x,
@@ -329,7 +337,7 @@ BLOATDEF Vector3 vec3_negate(Vector3 v)
     };
 }
 
-BLOATDEF Vector3 vec3_cross(Vector3 v1, Vector3 v2)
+BLOATMDEF Vector3 vec3_cross(Vector3 v1, Vector3 v2)
 {
     return (Vector3) {
         .x = v1.y*v2.z - v1.z*v2.y,
@@ -338,13 +346,13 @@ BLOATDEF Vector3 vec3_cross(Vector3 v1, Vector3 v2)
     };
 }
 
-BLOATDEF float vec3_dot(Vector3 v1, Vector3 v2)
+BLOATMDEF float vec3_dot(Vector3 v1, Vector3 v2)
 {
     return (v1.x*v2.x + v1.y*v2.y + v1.z*v2.z);
 }
 
 // Vector 4
-BLOATDEF Vector4 vec4(float x, float y, float z, float w)
+BLOATMDEF Vector4 vec4(float x, float y, float z, float w)
 {
     return (Vector4) {
         .x = x,
@@ -355,7 +363,7 @@ BLOATDEF Vector4 vec4(float x, float y, float z, float w)
 }
 
 // Quaternion
-BLOATDEF Quaternion quat(void)
+BLOATMDEF Quaternion quat(void)
 {
     return (Quaternion) {
         .x = 0.0f,
@@ -365,7 +373,7 @@ BLOATDEF Quaternion quat(void)
     };
 }
 
-BLOATDEF Quaternion quat_add_quat(Quaternion q1, Quaternion q2)
+BLOATMDEF Quaternion quat_add_quat(Quaternion q1, Quaternion q2)
 {
     return (Quaternion) {
         .x = q1.x + q2.x,
@@ -375,7 +383,7 @@ BLOATDEF Quaternion quat_add_quat(Quaternion q1, Quaternion q2)
     };
 }
 
-BLOATDEF Quaternion quat_add_value(Quaternion q, float value)
+BLOATMDEF Quaternion quat_add_value(Quaternion q, float value)
 {
     return (Quaternion) {
         .x = q.x + value,
@@ -385,7 +393,7 @@ BLOATDEF Quaternion quat_add_value(Quaternion q, float value)
     };
 }
 
-BLOATDEF Quaternion quat_sub_quat(Quaternion q1, Quaternion q2)
+BLOATMDEF Quaternion quat_sub_quat(Quaternion q1, Quaternion q2)
 {
     return (Quaternion) {
         .x = q1.x - q2.x,
@@ -395,7 +403,7 @@ BLOATDEF Quaternion quat_sub_quat(Quaternion q1, Quaternion q2)
     };
 }
 
-BLOATDEF Quaternion quat_sub_value(Quaternion q, float value)
+BLOATMDEF Quaternion quat_sub_value(Quaternion q, float value)
 {
     return (Quaternion) {
         .x = q.x - value,
@@ -405,7 +413,7 @@ BLOATDEF Quaternion quat_sub_value(Quaternion q, float value)
     };
 }
 
-BLOATDEF Quaternion quat_scale(Quaternion q, float scale)
+BLOATMDEF Quaternion quat_scale(Quaternion q, float scale)
 {
     return (Quaternion) {
         .x = q.x * scale,
@@ -415,16 +423,16 @@ BLOATDEF Quaternion quat_scale(Quaternion q, float scale)
     };
 }
 
-BLOATDEF float quat_length_sqr(Quaternion q)
+BLOATMDEF float quat_length_sqr(Quaternion q)
 {
     return (q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w);
 }
 
-BLOATDEF Quaternion quat_normalize(Quaternion q)
+BLOATMDEF Quaternion quat_normalize(Quaternion q)
 {
     float length = sqrtf(quat_length_sqr(q));
 
-    if (length == 0.0f) length = 1.0f; 
+    if (length == 0.0f) length = 1.0f;
     float i_length = 1.0f/length;
 
     return (Quaternion) {
@@ -434,7 +442,7 @@ BLOATDEF Quaternion quat_normalize(Quaternion q)
         .w = q.w * i_length,
     };
 }
-BLOATDEF Quaternion quat_negate(Quaternion q)
+BLOATMDEF Quaternion quat_negate(Quaternion q)
 {
     return (Quaternion) {
         .x = -q.x,
@@ -444,23 +452,23 @@ BLOATDEF Quaternion quat_negate(Quaternion q)
     };
 }
 
-BLOATDEF float quat_dot(Quaternion q1, Quaternion q2)
+BLOATMDEF float quat_dot(Quaternion q1, Quaternion q2)
 {
     return (q1.x*q2.x + q1.y*q2.y + q1.z*q2.z + q1.w*q2.w);
 }
 
-BLOATDEF bool quat_eq(Quaternion q1, Quaternion q2)
+BLOATMDEF bool quat_eq(Quaternion q1, Quaternion q2)
 {
     return float_eq(q1.x, q2.x) && float_eq(q1.y, q2.y) && float_eq(q1.z, q2.z) && float_eq(q1.w, q2.w);
 }
 
-BLOATDEF bool quat_zeroed(Quaternion q)
+BLOATMDEF bool quat_zeroed(Quaternion q)
 {
     return q.x == 0.0f && q.y == 0.0f && q.z == 0.0f && q.w == 0.0f;
 }
 
 // Matrix
-BLOATDEF Matrix mat_value(float value)
+BLOATMDEF Matrix mat_value(float value)
 {
     return (Matrix) {
         .m0 = value,
@@ -470,7 +478,7 @@ BLOATDEF Matrix mat_value(float value)
     };
 }
 
-BLOATDEF Matrix mat_translate(Vector3 v)
+BLOATMDEF Matrix mat_translate(Vector3 v)
 {
     return (Matrix) {
         .m0  = 1.0f,
@@ -484,7 +492,7 @@ BLOATDEF Matrix mat_translate(Vector3 v)
     };
 }
 
-BLOATDEF Matrix mat_multiply(Matrix left, Matrix right)
+BLOATMDEF Matrix mat_multiply(Matrix left, Matrix right)
 {
     return (Matrix) {
         .m0  = left.m0 *right.m0  + left.m1 *right.m4 + left.m2*right.m8   + left.m3*right.m12,
@@ -509,7 +517,7 @@ BLOATDEF Matrix mat_multiply(Matrix left, Matrix right)
     };
 }
 
-BLOATDEF Matrix mat_rotate(Vector3 axis, float angle)
+BLOATMDEF Matrix mat_rotate(Vector3 axis, float angle)
 {
     float c = cosf(angle);
     float s = sinf(angle);
@@ -544,7 +552,7 @@ BLOATDEF Matrix mat_rotate(Vector3 axis, float angle)
     };
 }
 
-BLOATDEF Matrix mat_scale(Vector3 v)
+BLOATMDEF Matrix mat_scale(Vector3 v)
 {
     return (Matrix) {
         .m0  = v.x,
@@ -554,7 +562,7 @@ BLOATDEF Matrix mat_scale(Vector3 v)
     };
 }
 
-BLOATDEF Matrix mat_perspective(float fov, float aspect, float near, float far)
+BLOATMDEF Matrix mat_perspective(float fov, float aspect, float near, float far)
 {
     float top = near*tanf(fov * 0.5f);
     float bottom = -top;
@@ -577,7 +585,7 @@ BLOATDEF Matrix mat_perspective(float fov, float aspect, float near, float far)
     };
 }
 
-BLOATDEF Matrix mat_look_at(Vector3 eye, Vector3 target, Vector3 up)
+BLOATMDEF Matrix mat_look_at(Vector3 eye, Vector3 target, Vector3 up)
 {
     Vector3 d = vec3_normalize(vec3_sub(eye, target));
     Vector3 r = vec3_normalize(vec3_cross(d, up));
@@ -591,7 +599,7 @@ BLOATDEF Matrix mat_look_at(Vector3 eye, Vector3 target, Vector3 up)
     };
 }
 
-BLOATDEF MatrixLayout mat_flatten(Matrix m)
+BLOATMDEF MatrixLayout mat_flatten(Matrix m)
 {
     return (MatrixLayout) {
         .mat = {
@@ -603,4 +611,4 @@ BLOATDEF MatrixLayout mat_flatten(Matrix m)
     };
 }
 
-#endif // BLOAT_MATH_IMPLEMENTATION
+#endif // BLOATMATH_STATIC_INLINE || BLOATMATH_IMPLEMENTATION
