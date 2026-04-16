@@ -21,7 +21,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 
-#define DEFER(value) do { return (value); goto defer; } while(0)
+#define DEFER(value) do { result = (value); goto defer; } while(0)
 
 #define SIZEOF(array) sizeof((array)) / sizeof((array[0]))
 
