@@ -20,6 +20,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <stdint.h>
 
 typedef int8_t  i8;
 typedef int16_t i16;
