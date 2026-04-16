@@ -123,6 +123,12 @@ BLOATDEF bool    slice_ends_with_str(Slice slice, const char *suffix);
 BLOATDEF void    slice_print(Slice slice);
 BLOATDEF void    slice_println(Slice slice);
 
+// Log
+void             log_info(const char *msg, ...);
+void             log_warn(const char *msg, ...);
+void             log_err(const char *msg, ...);
+void             log_fatal(const char *msg, ...); // Exit program
+
 // C Strings
 BLOATDEF void    string_to_lowercase(char *string);
 BLOATDEF void    string_to_uppercase(char *string);
@@ -270,6 +276,57 @@ BLOATDEF void slice_print(Slice slice)
 BLOATDEF void slice_println(Slice slice)
 {
     slice_print(slice); putchar('\n');
+}
+
+// Log
+void log_info(const char *msg, ...)
+{
+    va_list args;
+    va_start(args, msg);
+
+    fprintf(stderr, "INFO: ");
+    vfprintf(stderr, msg, args);
+    fprintf(stderr, "\n");
+
+    va_end(args);
+}
+
+void log_warn(const char *msg, ...)
+{
+    va_list args;
+    va_start(args, msg);
+
+    fprintf(stderr, "WARNING: ");
+    vfprintf(stderr, msg, args);
+    fprintf(stderr, "\n");
+
+    va_end(args);
+}
+
+void log_err(const char *msg, ...)
+{
+    va_list args;
+    va_start(args, msg);
+
+    fprintf(stderr, "ERROR: ");
+    vfprintf(stderr, msg, args);
+    fprintf(stderr, "\n");
+
+    va_end(args);
+}
+
+void log_fatal(const char *msg, ...)
+{
+    va_list args;
+    va_start(args, msg);
+
+    fprintf(stderr, "FATAL: ");
+    vfprintf(stderr, msg, args);
+    fprintf(stderr, "\n");
+
+    va_end(args);
+
+    exit(EXIT_FAILURE);
 }
 
 BLOATDEF void string_to_uppercase(char *string)
