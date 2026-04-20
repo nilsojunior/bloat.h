@@ -123,7 +123,6 @@ BLOATMDEF Quaternion   quat_sub_quat(Quaternion q1, Quaternion q2);
 BLOATMDEF Quaternion   quat_sub_value(Quaternion q, float value);
 BLOATMDEF Quaternion   quat_scale(Quaternion q, float scale);
 BLOATMDEF Quaternion   quat_normalize(Quaternion q);
-BLOATMDEF Quaternion   quat_negate(Quaternion q);
 BLOATMDEF Quaternion   quat_conjugate(Quaternion q);
 BLOATMDEF Quaternion   quat_invert(Quaternion q);
 BLOATMDEF Quaternion   quat_multiply(Quaternion q1, Quaternion q2);
@@ -488,15 +487,6 @@ BLOATMDEF Quaternion quat_normalize(Quaternion q)
         .y = q.y * i_length,
         .z = q.z * i_length,
         .w = q.w * i_length,
-    };
-}
-BLOATMDEF Quaternion quat_negate(Quaternion q)
-{
-    return (Quaternion) {
-        .x = -q.x,
-        .y = -q.y,
-        .z = -q.z,
-        .w = -q.w,
     };
 }
 
