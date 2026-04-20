@@ -95,6 +95,7 @@ BLOATMDEF Vector2      vec2_degrees(Vector2 v); // From radians to degrees
 BLOATMDEF Vector2      vec2_multiply(Vector2 v1, Vector2 v2);
 BLOATMDEF float        vec2_cross(Vector2 v1, Vector2 v2);
 BLOATMDEF float        vec2_dot(Vector2 v1, Vector2 v2);
+BLOATMDEF float        vec2_length(Vector2 v);
 BLOATMDEF float        vec2_length_sqr(Vector2 v);
 BLOATMDEF bool         vec2_eq(Vector2 v1, Vector2 v2);
 BLOATMDEF bool         vec2_zeroed(Vector2 v);
@@ -112,6 +113,7 @@ BLOATMDEF Vector3      vec3_radians(Vector3 v); // From degrees to radians
 BLOATMDEF Vector3      vec3_degrees(Vector3 v); // From radians to degrees
 BLOATMDEF Vector3      vec3_multiply(Vector3 v1, Vector3 v2);
 BLOATMDEF float        vec3_dot(Vector3 v1, Vector3 v2);
+BLOATMDEF float        vec3_length(Vector3 v);
 BLOATMDEF float        vec3_length_sqr(Vector3 v);
 BLOATMDEF bool         vec3_eq(Vector3 v1, Vector3 v2);
 BLOATMDEF bool         vec3_zeroed(Vector3 v);
@@ -134,6 +136,7 @@ BLOATMDEF Quaternion   quat_from_vec(Vector3 v1, Vector3 v2);
 BLOATMDEF Vector3      quat_rotate_by_vec(Quaternion q, Vector3 v);
 BLOATMDEF Matrix       quat_to_matrix(Quaternion q);
 BLOATMDEF float        quat_dot(Quaternion q1, Quaternion q2);
+BLOATMDEF float        quat_length(Quaternion q);
 BLOATMDEF float        quat_length_sqr(Quaternion q);
 BLOATMDEF bool         quat_eq(Quaternion q1, Quaternion q2);
 BLOATMDEF bool         quat_zeroed(Quaternion q);
@@ -213,6 +216,11 @@ BLOATMDEF Vector2 vec2_scale(Vector2 v, float scale)
     };
 }
 
+BLOATMDEF float vec2_length(Vector2 v)
+{
+    return sqrtf(v.x*v.x + v.y*v.y);
+}
+
 BLOATMDEF float vec2_length_sqr(Vector2 v)
 {
     return v.x*v.x + v.y*v.y;
@@ -225,7 +233,7 @@ BLOATMDEF bool vec2_eq(Vector2 v1, Vector2 v2)
 
 BLOATMDEF Vector2 vec2_normalize(Vector2 v)
 {
-    float length = sqrtf(vec2_length_sqr(v));
+    float length = vec2_length(v);
 
     if (length == 0.0f) length = 1.0f;
     float i_length = 1.0f/length;
@@ -338,9 +346,14 @@ BLOATMDEF Vector3 vec3_scale(Vector3 v, float scale)
     };
 }
 
+BLOATMDEF float vec3_length(Vector3 v)
+{
+    return sqrtf(v.x*v.x + v.y*v.y + v.z*v.z);
+}
+
 BLOATMDEF float vec3_length_sqr(Vector3 v)
 {
-    return (v.x*v.x + v.y*v.y + v.z*v.z);
+    return v.x*v.x + v.y*v.y + v.z*v.z;
 }
 
 BLOATMDEF bool vec3_eq(Vector3 v1, Vector3 v2)
@@ -355,7 +368,7 @@ BLOATMDEF bool vec3_zeroed(Vector3 v)
 
 BLOATMDEF Vector3 vec3_normalize(Vector3 v)
 {
-    float length = sqrtf(vec3_length_sqr(v));
+    float length = vec3_length(v);
 
     if (length == 0.0f) length = 1.0f;
     float i_length = 1.0f/length;
@@ -489,14 +502,19 @@ BLOATMDEF Quaternion quat_scale(Quaternion q, float scale)
     };
 }
 
+BLOATMDEF float quat_length(Quaternion q)
+{
+    return sqrtf(q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w);
+}
+
 BLOATMDEF float quat_length_sqr(Quaternion q)
 {
-    return (q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w);
+    return q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
 }
 
 BLOATMDEF Quaternion quat_normalize(Quaternion q)
 {
-    float length = sqrtf(quat_length_sqr(q));
+    float length = quat_length(q);
 
     if (length == 0.0f) length = 1.0f;
     float i_length = 1.0f/length;
@@ -521,7 +539,7 @@ BLOATMDEF Quaternion quat_conjugate(Quaternion q)
 
 BLOATMDEF Quaternion quat_invert(Quaternion q)
 {
-    float length = sqrtf(quat_length_sqr(q));
+    float length = quat_length(q);
 
     if (length == 0.0f) return q;
 
