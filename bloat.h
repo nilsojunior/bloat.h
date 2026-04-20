@@ -21,6 +21,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <stdint.h>
+#include <stdarg.h>
 
 typedef int8_t  i8;
 typedef int16_t i16;
