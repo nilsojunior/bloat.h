@@ -124,6 +124,14 @@ BLOATMDEF Quaternion   quat_sub_value(Quaternion q, float value);
 BLOATMDEF Quaternion   quat_scale(Quaternion q, float scale);
 BLOATMDEF Quaternion   quat_normalize(Quaternion q);
 BLOATMDEF Quaternion   quat_negate(Quaternion q);
+BLOATMDEF Quaternion   quat_conjugate(Quaternion q);
+BLOATMDEF Quaternion   quat_invert(Quaternion q);
+BLOATMDEF Quaternion   quat_multiply(Quaternion q1, Quaternion q2);
+BLOATMDEF Quaternion   quat_from_axis_angle(Vector3 axis, float angle);
+BLOATMDEF Quaternion   quat_from_euler(float pitch, float yaw, float roll);
+BLOATMDEF Quaternion   quat_from_vec(Vector3 v1, Vector3 v2);
+BLOATMDEF Vector3      quat_rotate_by_vec(Quaternion q, Vector3 v);
+BLOATMDEF Matrix       quat_to_matrix(Quaternion q);
 BLOATMDEF float        quat_dot(Quaternion q1, Quaternion q2);
 BLOATMDEF float        quat_length_sqr(Quaternion q);
 BLOATMDEF bool         quat_eq(Quaternion q1, Quaternion q2);
@@ -489,6 +497,146 @@ BLOATMDEF Quaternion quat_negate(Quaternion q)
         .z = -q.z,
         .w = -q.w,
     };
+}
+
+BLOATMDEF Quaternion quat_conjugate(Quaternion q)
+{
+    return (Quaternion) {
+        .x = -q.x,
+        .y = -q.y,
+        .z = -q.z,
+        .w = q.w,
+    };
+}
+
+BLOATMDEF Quaternion quat_invert(Quaternion q)
+{
+    float length = sqrtf(quat_length_sqr(q));
+
+    if (length == 0.0f) return q;
+
+    float inverse_length = 1.0f/length;
+
+    return (Quaternion) {
+        .x = q.x * -inverse_length,
+        .y = q.y * -inverse_length,
+        .z = q.z * -inverse_length,
+        .w = q.w *  inverse_length,
+    };
+}
+
+BLOATMDEF Quaternion quat_multiply(Quaternion q1, Quaternion q2)
+{
+    return (Quaternion) {
+        .x = q1.w*q2.x + q1.x*q2.w + q1.y*q2.z - q1.z*q2.y,
+        .y = q1.w*q2.y - q1.x*q2.z + q1.y*q2.w + q1.z*q2.x,
+        .z = q1.w*q2.z + q1.x*q2.y - q1.y*q2.x + q1.z*q2.w,
+        .w = q1.w*q2.w - q1.x*q2.x - q1.y*q2.y - q1.z*q2.z,
+    };
+}
+
+BLOATMDEF Quaternion quat_from_axis_angle(Vector3 axis, float angle)
+{
+    float length = vec3_length_sqr(axis);
+    if (length == 0.0f) return quat();
+
+    angle *= 0.5;
+
+    axis = vec3_normalize(axis);
+    float sin_half = sinf(angle);
+
+    return (Quaternion) {
+        .x = axis.x * sin_half,
+        .y = axis.y * sin_half,
+        .z = axis.z * sin_half,
+        .w = cosf(angle),
+    };
+}
+
+// NOTE: ZYX in radians
+BLOATMDEF Quaternion quat_from_euler(float pitch, float yaw, float roll)
+{
+    pitch *= 0.5f;
+    yaw   *= 0.5f;
+    roll  *= 0.5f;
+
+    float xx = cosf(pitch);
+    float xy = sinf(pitch);
+    float yx = cosf(yaw);
+    float yy = sinf(yaw);
+    float zx = cosf(roll);
+    float zy = sinf(roll);
+
+    return (Quaternion) {
+        .x = xy*yx*zx - xx*yy*zy,
+        .y = xx*yy*zx + xy*yx*zy,
+        .z = xx*yx*zy - xy*yy*zx,
+        .w = xx*yx*zx + xy*yy*zy,
+    };
+}
+
+BLOATMDEF Quaternion quat_from_vec(Vector3 v1, Vector3 v2)
+{
+    float theta   = vec3_dot(v1, v2);
+    Vector3 cross = vec3_cross(v1, v2);
+    float length  = vec3_length_sqr(cross);
+
+    Quaternion q = {
+        .x = cross.x,
+        .y = cross.y,
+        .z = cross.z,
+        .w = sqrtf(length + theta*theta) + theta,
+    };
+
+    return quat_normalize(q);
+}
+
+BLOATMDEF Vector3 quat_rotate_by_vec(Quaternion q, Vector3 v)
+{
+    // TODO: Maybe refactor this into a function
+    Quaternion vq = { v.x, v.y, v.z, 0.0f };
+
+    Quaternion rotated = quat_multiply(quat_multiply(q, vq), quat_conjugate(q));
+
+    return (Vector3) {
+        .x = rotated.x,
+        .y = rotated.y,
+        .z = rotated.z,
+    };
+}
+
+BLOATMDEF Matrix quat_to_matrix(Quaternion q)
+{
+    Matrix mat = mat();
+
+    float x = q.x;
+    float y = q.y;
+    float z = q.z;
+    float w = q.w;
+
+    float xx = x*x;
+    float yy = y*y;
+    float zz = z*z;
+    float xy = x*y;
+    float xz = x*z;
+    float yz = y*z;
+    float wx = w*x;
+    float wy = w*y;
+    float wz = w*z;
+
+    mat.m0 = 1.0f - 2.0f * (yy + zz);
+    mat.m1 = 2.0f * (xy + wz);
+    mat.m2 = 2.0f * (xz - wy);
+
+    mat.m4 = 2.0f * (xy - wz);
+    mat.m5 = 1.0f - 2.0f * (xx + zz);
+    mat.m6 = 2.0f * (yz + wx);
+
+    mat.m8  = 2.0f * (xz + wy);
+    mat.m9  = 2.0f * (yz - wx);
+    mat.m10 = 1.0f - 2.0f * (xx + yy);
+
+    return mat;
 }
 
 BLOATMDEF float quat_dot(Quaternion q1, Quaternion q2)
