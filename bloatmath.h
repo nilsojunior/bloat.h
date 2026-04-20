@@ -51,10 +51,6 @@ typedef struct { float mat[16]; } MatrixLayout;
 #define as_radians(x) ((x)) * (PI / 180.0f)
 #define as_degrees(x) ((x)) * (180.0f / PI)
 
-#define clamp01(value) clamp((value), 0.0f, 1.0f)
-
-#define mat() mat_value(1.0f)
-
 #define vec2_add(v, value)                      \
     _Generic((value),                           \
              float: vec2_add_value,             \
@@ -83,6 +79,7 @@ BLOATMDEF float        clamp(float value, float min, float max);
 BLOATMDEF bool         float_eq(float x, float y);
 
 BLOATMDEF Vector2      vec2(float x, float y);
+BLOATMDEF Vector2      vec2_fill(float value); // XY = value
 BLOATMDEF Vector2      vec2_add_vec(Vector2 v1, Vector2 v2);
 BLOATMDEF Vector2      vec2_add_value(Vector2 v, float value);
 BLOATMDEF Vector2      vec2_sub_vec(Vector2 v1, Vector2 v2);
@@ -101,6 +98,7 @@ BLOATMDEF bool         vec2_eq(Vector2 v1, Vector2 v2);
 BLOATMDEF bool         vec2_zeroed(Vector2 v);
 
 BLOATMDEF Vector3      vec3(float x, float y, float z);
+BLOATMDEF Vector3      vec3_fill(float value); // XYZ = value
 BLOATMDEF Vector3      vec3_add_vec(Vector3 v1, Vector3 v2);
 BLOATMDEF Vector3      vec3_add_value(Vector3 v, float value);
 BLOATMDEF Vector3      vec3_sub_vec(Vector3 v1, Vector3 v2);
@@ -120,7 +118,7 @@ BLOATMDEF bool         vec3_zeroed(Vector3 v);
 
 BLOATMDEF Vector4      vec4(float x, float y, float z, float w);
 
-BLOATMDEF Quaternion   quat(void);
+BLOATMDEF Quaternion   quat_identity(void);
 BLOATMDEF Quaternion   quat_add_quat(Quaternion q1, Quaternion q2);
 BLOATMDEF Quaternion   quat_add_value(Quaternion q, float value);
 BLOATMDEF Quaternion   quat_sub_quat(Quaternion q1, Quaternion q2);
@@ -141,12 +139,12 @@ BLOATMDEF float        quat_length_sqr(Quaternion q);
 BLOATMDEF bool         quat_eq(Quaternion q1, Quaternion q2);
 BLOATMDEF bool         quat_zeroed(Quaternion q);
 
-BLOATMDEF Matrix       mat_value(float value);
+BLOATMDEF Matrix       mat_identity(void);
 BLOATMDEF Matrix       mat_translate(Vector3 v);
 BLOATMDEF Matrix       mat_multiply(Matrix left, Matrix right);
 BLOATMDEF Matrix       mat_rotate(Vector3 axis, float angle);
 BLOATMDEF Matrix       mat_scale(Vector3 v);
-BLOATMDEF Matrix       mat_transpose(Matrix mat);
+BLOATMDEF Matrix       mat_transpose(Matrix m);
 BLOATMDEF Matrix       mat_perspective(float fov, float aspect, float near, float far);
 BLOATMDEF Matrix       mat_look_at(Vector3 eye, Vector3 target, Vector3 up);
 BLOATMDEF MatrixLayout mat_flatten(Matrix m);
@@ -173,6 +171,14 @@ BLOATMDEF Vector2 vec2(float x, float y)
     return (Vector2) {
         .x = x,
         .y = y,
+    };
+}
+
+BLOATMDEF Vector2 vec2_fill(float value)
+{
+    return (Vector2) {
+        .x = value,
+        .y = value,
     };
 }
 
@@ -298,6 +304,15 @@ BLOATMDEF Vector3 vec3(float x, float y, float z)
         .x = x,
         .y = y,
         .z = z,
+    };
+}
+
+BLOATMDEF Vector3 vec3_fill(float value)
+{
+    return (Vector3) {
+        .x = value,
+        .y = value,
+        .z = value,
     };
 }
 
@@ -442,7 +457,7 @@ BLOATMDEF Vector4 vec4(float x, float y, float z, float w)
 }
 
 // Quaternion
-BLOATMDEF Quaternion quat(void)
+BLOATMDEF Quaternion quat_identity(void)
 {
     return (Quaternion) {
         .x = 0.0f,
@@ -566,7 +581,7 @@ BLOATMDEF Quaternion quat_multiply(Quaternion q1, Quaternion q2)
 BLOATMDEF Quaternion quat_from_axis_angle(Vector3 axis, float angle)
 {
     float length = vec3_length_sqr(axis);
-    if (length == 0.0f) return quat();
+    if (length == 0.0f) return quat_identity();
 
     angle *= 0.5;
 
@@ -635,7 +650,7 @@ BLOATMDEF Vector3 quat_rotate_by_vec(Quaternion q, Vector3 v)
 
 BLOATMDEF Matrix quat_to_matrix(Quaternion q)
 {
-    Matrix mat = mat();
+    Matrix mat = mat_identity();
 
     float x = q.x;
     float y = q.y;
@@ -683,13 +698,13 @@ BLOATMDEF bool quat_zeroed(Quaternion q)
 }
 
 // Matrix
-BLOATMDEF Matrix mat_value(float value)
+BLOATMDEF Matrix mat_identity(void)
 {
     return (Matrix) {
-        .m0 = value,
-        .m5 = value,
-        .m10 = value,
-        .m15 = value,
+        .m0 = 1.0f,
+        .m5 = 1.0f,
+        .m10 = 1.0f,
+        .m15 = 1.0f,
     };
 }
 
@@ -777,28 +792,28 @@ BLOATMDEF Matrix mat_scale(Vector3 v)
     };
 }
 
-BLOATMDEF Matrix mat_transpose(Matrix mat)
+BLOATMDEF Matrix mat_transpose(Matrix m)
 {
     return (Matrix) {
-        .m0  = mat.m0,
-        .m1  = mat.m4,
-        .m2  = mat.m8,
-        .m3  = mat.m12,
+        .m0  = m.m0,
+        .m1  = m.m4,
+        .m2  = m.m8,
+        .m3  = m.m12,
 
-        .m4  = mat.m1,
-        .m5  = mat.m5,
-        .m6  = mat.m9,
-        .m7  = mat.m13,
+        .m4  = m.m1,
+        .m5  = m.m5,
+        .m6  = m.m9,
+        .m7  = m.m13,
 
-        .m8  = mat.m2,
-        .m9  = mat.m6,
-        .m10 = mat.m10,
-        .m11 = mat.m14,
+        .m8  = m.m2,
+        .m9  = m.m6,
+        .m10 = m.m10,
+        .m11 = m.m14,
 
-        .m12 = mat.m3,
-        .m13 = mat.m7,
-        .m14 = mat.m11,
-        .m15 = mat.m15,
+        .m12 = m.m3,
+        .m13 = m.m7,
+        .m14 = m.m11,
+        .m15 = m.m15,
     };
 }
 
