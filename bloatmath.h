@@ -142,6 +142,7 @@ BLOATMDEF Matrix       mat_translate(Vector3 v);
 BLOATMDEF Matrix       mat_multiply(Matrix left, Matrix right);
 BLOATMDEF Matrix       mat_rotate(Vector3 axis, float angle);
 BLOATMDEF Matrix       mat_scale(Vector3 v);
+BLOATMDEF Matrix       mat_transpose(Matrix mat);
 BLOATMDEF Matrix       mat_perspective(float fov, float aspect, float near, float far);
 BLOATMDEF Matrix       mat_look_at(Vector3 eye, Vector3 target, Vector3 up);
 BLOATMDEF MatrixLayout mat_flatten(Matrix m);
@@ -746,6 +747,31 @@ BLOATMDEF Matrix mat_scale(Vector3 v)
         .m5  = v.y,
         .m10 = v.z,
         .m15 = 1.0f,
+    };
+}
+
+BLOATMDEF Matrix mat_transpose(Matrix mat)
+{
+    return (Matrix) {
+        .m0  = mat.m0,
+        .m1  = mat.m4,
+        .m2  = mat.m8,
+        .m3  = mat.m12,
+
+        .m4  = mat.m1,
+        .m5  = mat.m5,
+        .m6  = mat.m9,
+        .m7  = mat.m13,
+
+        .m8  = mat.m2,
+        .m9  = mat.m6,
+        .m10 = mat.m10,
+        .m11 = mat.m14,
+
+        .m12 = mat.m3,
+        .m13 = mat.m7,
+        .m14 = mat.m11,
+        .m15 = mat.m15,
     };
 }
 
