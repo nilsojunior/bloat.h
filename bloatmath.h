@@ -92,6 +92,7 @@ BLOATMDEF Vector2      vec2_normalize(Vector2 v);
 BLOATMDEF Vector2      vec2_negate(Vector2 v);
 BLOATMDEF Vector2      vec2_radians(Vector2 v); // From degrees to radians
 BLOATMDEF Vector2      vec2_degrees(Vector2 v); // From radians to degrees
+BLOATMDEF Vector2      vec2_multiply(Vector2 v1, Vector2 v2);
 BLOATMDEF float        vec2_cross(Vector2 v1, Vector2 v2);
 BLOATMDEF float        vec2_dot(Vector2 v1, Vector2 v2);
 BLOATMDEF float        vec2_length_sqr(Vector2 v);
@@ -109,6 +110,7 @@ BLOATMDEF Vector3      vec3_negate(Vector3 v);
 BLOATMDEF Vector3      vec3_cross(Vector3 v1, Vector3 v2);
 BLOATMDEF Vector3      vec3_radians(Vector3 v); // From degrees to radians
 BLOATMDEF Vector3      vec3_degrees(Vector3 v); // From radians to degrees
+BLOATMDEF Vector3      vec3_multiply(Vector3 v1, Vector3 v2);
 BLOATMDEF float        vec3_dot(Vector3 v1, Vector3 v2);
 BLOATMDEF float        vec3_length_sqr(Vector3 v);
 BLOATMDEF bool         vec3_eq(Vector3 v1, Vector3 v2);
@@ -258,6 +260,14 @@ BLOATMDEF Vector2 vec2_degrees(Vector2 v)
     };
 }
 
+BLOATMDEF Vector2 vec2_multiply(Vector2 v1, Vector2 v2)
+{
+    return (Vector2) {
+        .x = v1.x * v2.x,
+        .y = v1.y * v2.y,
+    };
+}
+
 BLOATMDEF float vec2_cross(Vector2 v1, Vector2 v2)
 {
     return (v1.x*v2.y - v1.y*v2.x);
@@ -390,6 +400,15 @@ BLOATMDEF Vector3 vec3_degrees(Vector3 v)
         .x = v.x * (180.0f / PI),
         .y = v.y * (180.0f / PI),
         .z = v.z * (180.0f / PI),
+    };
+}
+
+BLOATMDEF Vector3 vec3_multiply(Vector3 v1, Vector3 v2)
+{
+    return (Vector3) {
+        .x = v1.x * v2.x,
+        .y = v1.y * v2.y,
+        .z = v1.z * v2.z,
     };
 }
 
