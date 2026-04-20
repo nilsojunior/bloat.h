@@ -49,6 +49,7 @@ typedef struct { float mat[16]; } MatrixLayout;
 #endif
 
 #define as_radians(x) ((x)) * (PI / 180.0f)
+#define as_degrees(x) ((x)) * (180.0f / PI)
 
 #define clamp01(value) clamp((value), 0.0f, 1.0f)
 
@@ -89,6 +90,8 @@ BLOATMDEF Vector2      vec2_sub_value(Vector2 v, float value);
 BLOATMDEF Vector2      vec2_scale(Vector2 v, float scale);
 BLOATMDEF Vector2      vec2_normalize(Vector2 v);
 BLOATMDEF Vector2      vec2_negate(Vector2 v);
+BLOATMDEF Vector2      vec2_radians(Vector2 v); // From degrees to radians
+BLOATMDEF Vector2      vec2_degrees(Vector2 v); // From radians to degrees
 BLOATMDEF float        vec2_cross(Vector2 v1, Vector2 v2);
 BLOATMDEF float        vec2_dot(Vector2 v1, Vector2 v2);
 BLOATMDEF float        vec2_length_sqr(Vector2 v);
@@ -104,6 +107,8 @@ BLOATMDEF Vector3      vec3_scale(Vector3 v, float scale);
 BLOATMDEF Vector3      vec3_normalize(Vector3 v);
 BLOATMDEF Vector3      vec3_negate(Vector3 v);
 BLOATMDEF Vector3      vec3_cross(Vector3 v1, Vector3 v2);
+BLOATMDEF Vector3      vec3_radians(Vector3 v); // From degrees to radians
+BLOATMDEF Vector3      vec3_degrees(Vector3 v); // From radians to degrees
 BLOATMDEF float        vec3_dot(Vector3 v1, Vector3 v2);
 BLOATMDEF float        vec3_length_sqr(Vector3 v);
 BLOATMDEF bool         vec3_eq(Vector3 v1, Vector3 v2);
@@ -229,6 +234,22 @@ BLOATMDEF Vector2 vec2_negate(Vector2 v)
     };
 }
 
+BLOATMDEF Vector2 vec2_radians(Vector2 v)
+{
+    return (Vector2) {
+        .x = v.x * (PI / 180.0f),
+        .y = v.y * (PI / 180.0f),
+    };
+}
+
+BLOATMDEF Vector2 vec2_degrees(Vector2 v)
+{
+    return (Vector2) {
+        .x = v.x * (180.0f / PI),
+        .y = v.y * (180.0f / PI),
+    };
+}
+
 BLOATMDEF float vec2_cross(Vector2 v1, Vector2 v2)
 {
     return (v1.x*v2.y - v1.y*v2.x);
@@ -343,6 +364,24 @@ BLOATMDEF Vector3 vec3_cross(Vector3 v1, Vector3 v2)
         .x = v1.y*v2.z - v1.z*v2.y,
         .y = v1.z*v2.x - v1.x*v2.z,
         .z = v1.x*v2.y - v1.y*v2.x,
+    };
+}
+
+BLOATMDEF Vector3 vec3_radians(Vector3 v)
+{
+    return (Vector3) {
+        .x = v.x * (PI / 180.0f),
+        .y = v.y * (PI / 180.0f),
+        .z = v.z * (PI / 180.0f),
+    };
+}
+
+BLOATMDEF Vector3 vec3_degrees(Vector3 v)
+{
+    return (Vector3) {
+        .x = v.x * (180.0f / PI),
+        .y = v.y * (180.0f / PI),
+        .z = v.z * (180.0f / PI),
     };
 }
 
