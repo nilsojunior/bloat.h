@@ -556,10 +556,10 @@ BLOATMDEF Quaternion quat_invert(Quaternion q)
 BLOATMDEF Quaternion quat_multiply(Quaternion q1, Quaternion q2)
 {
     return (Quaternion) {
-        .x = q1.w*q2.x + q1.x*q2.w + q1.y*q2.z - q1.z*q2.y,
-        .y = q1.w*q2.y - q1.x*q2.z + q1.y*q2.w + q1.z*q2.x,
-        .z = q1.w*q2.z + q1.x*q2.y - q1.y*q2.x + q1.z*q2.w,
-        .w = q1.w*q2.w - q1.x*q2.x - q1.y*q2.y - q1.z*q2.z,
+        .x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y,
+        .y = q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x,
+        .z = q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w,
+        .w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z,
     };
 }
 
@@ -596,10 +596,10 @@ BLOATMDEF Quaternion quat_from_euler(float pitch, float yaw, float roll)
     float zy = sinf(roll);
 
     return (Quaternion) {
-        .x = xy*yx*zx - xx*yy*zy,
-        .y = xx*yy*zx + xy*yx*zy,
-        .z = xx*yx*zy - xy*yy*zx,
-        .w = xx*yx*zx + xy*yy*zy,
+        .x = xy * yx * zx - xx * yy * zy,
+        .y = xx * yy * zx + xy * yx * zy,
+        .z = xx * yx * zy - xy * yy * zx,
+        .w = xx * yx * zx + xy * yy * zy,
     };
 }
 
@@ -642,15 +642,15 @@ BLOATMDEF Matrix quat_to_matrix(Quaternion q)
     float z = q.z;
     float w = q.w;
 
-    float xx = x*x;
-    float yy = y*y;
-    float zz = z*z;
-    float xy = x*y;
-    float xz = x*z;
-    float yz = y*z;
-    float wx = w*x;
-    float wy = w*y;
-    float wz = w*z;
+    float xx = x * x;
+    float yy = y * y;
+    float zz = z * z;
+    float xy = x * y;
+    float xz = x * z;
+    float yz = y * z;
+    float wx = w * x;
+    float wy = w * y;
+    float wz = w * z;
 
     mat.m0 = 1.0f - 2.0f * (yy + zz);
     mat.m1 = 2.0f * (xy + wz);
@@ -710,25 +710,25 @@ BLOATMDEF Matrix mat_translate(Vector3 v)
 BLOATMDEF Matrix mat_multiply(Matrix left, Matrix right)
 {
     return (Matrix) {
-        .m0  = left.m0 *right.m0  + left.m1 *right.m4 + left.m2*right.m8   + left.m3*right.m12,
-        .m1  = left.m0 *right.m1  + left.m1 *right.m5 + left.m2*right.m9   + left.m3*right.m13,
-        .m2  = left.m0 *right.m2  + left.m1 *right.m6 + left.m2*right.m10  + left.m3*right.m14,
-        .m3  = left.m0 *right.m3  + left.m1 *right.m7 + left.m2*right.m11  + left.m3*right.m15,
+        .m0  = left.m0  * right.m0  + left.m1  * right.m4 + left.m2  * right.m8  + left.m3  * right.m12,
+        .m1  = left.m0  * right.m1  + left.m1  * right.m5 + left.m2  * right.m9  + left.m3  * right.m13,
+        .m2  = left.m0  * right.m2  + left.m1  * right.m6 + left.m2  * right.m10 + left.m3  * right.m14,
+        .m3  = left.m0  * right.m3  + left.m1  * right.m7 + left.m2  * right.m11 + left.m3  * right.m15,
 
-        .m4  = left.m4 *right.m0  + left.m5 *right.m4 + left.m6*right.m8   + left.m7*right.m12,
-        .m5  = left.m4 *right.m1  + left.m5 *right.m5 + left.m6*right.m9   + left.m7*right.m13,
-        .m6  = left.m4 *right.m2  + left.m5 *right.m6 + left.m6*right.m10  + left.m7*right.m14,
-        .m7  = left.m4 *right.m3  + left.m5 *right.m7 + left.m6*right.m11  + left.m7*right.m15,
+        .m4  = left.m4  * right.m0  + left.m5  * right.m4 + left.m6  * right.m8  + left.m7  * right.m12,
+        .m5  = left.m4  * right.m1  + left.m5  * right.m5 + left.m6  * right.m9  + left.m7  * right.m13,
+        .m6  = left.m4  * right.m2  + left.m5  * right.m6 + left.m6  * right.m10 + left.m7  * right.m14,
+        .m7  = left.m4  * right.m3  + left.m5  * right.m7 + left.m6  * right.m11 + left.m7  * right.m15,
 
-        .m8  = left.m8 *right.m0  + left.m9 *right.m4 + left.m10*right.m8  + left.m11*right.m12,
-        .m9  = left.m8 *right.m1  + left.m9 *right.m5 + left.m10*right.m9  + left.m11*right.m13,
-        .m10 = left.m8 *right.m2  + left.m9 *right.m6 + left.m10*right.m10 + left.m11*right.m14,
-        .m11 = left.m8 *right.m3  + left.m9 *right.m7 + left.m10*right.m11 + left.m11*right.m15,
+        .m8  = left.m8  * right.m0  + left.m9  * right.m4 + left.m10 * right.m8  + left.m11 * right.m12,
+        .m9  = left.m8  * right.m1  + left.m9  * right.m5 + left.m10 * right.m9  + left.m11 * right.m13,
+        .m10 = left.m8  * right.m2  + left.m9  * right.m6 + left.m10 * right.m10 + left.m11 * right.m14,
+        .m11 = left.m8  * right.m3  + left.m9  * right.m7 + left.m10 * right.m11 + left.m11 * right.m15,
 
-        .m12 = left.m12*right.m0  + left.m13*right.m4 + left.m14*right.m8  + left.m15*right.m12,
-        .m13 = left.m12*right.m1  + left.m13*right.m5 + left.m14*right.m9  + left.m15*right.m13,
-        .m14 = left.m12*right.m2  + left.m13*right.m6 + left.m14*right.m10 + left.m15*right.m14,
-        .m15 = left.m12*right.m3  + left.m13*right.m7 + left.m14*right.m11 + left.m15*right.m15,
+        .m12 = left.m12 * right.m0  + left.m13 * right.m4 + left.m14 * right.m8  + left.m15 * right.m12,
+        .m13 = left.m12 * right.m1  + left.m13 * right.m5 + left.m14 * right.m9  + left.m15 * right.m13,
+        .m14 = left.m12 * right.m2  + left.m13 * right.m6 + left.m14 * right.m10 + left.m15 * right.m14,
+        .m15 = left.m12 * right.m3  + left.m13 * right.m7 + left.m14 * right.m11 + left.m15 * right.m15,
     };
 }
 
@@ -804,10 +804,10 @@ BLOATMDEF Matrix mat_transpose(Matrix mat)
 
 BLOATMDEF Matrix mat_perspective(float fov, float aspect, float near, float far)
 {
-    float top = near*tanf(fov * 0.5f);
+    float top    = near*tanf(fov * 0.5f);
     float bottom = -top;
-    float right = top*aspect;
-    float left = -right;
+    float right  = top*aspect;
+    float left   = -right;
 
     // Frustum
     float x = right - left;
