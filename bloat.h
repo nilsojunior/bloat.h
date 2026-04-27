@@ -41,22 +41,32 @@ typedef uint64_t u64;
 
 #define vector_define(T, Name)                  \
     typedef struct {                            \
-        T *items;                               \
+        (T) *items;                             \
         size_t count;                           \
-        size_t capacity;                        \
-    } Name;                                     \
+        size_t cap;                             \
+    } (Name);                                   \
 
-#define vector_append(T, item)                                          \
-    do {                                                                \
-        if ((T).count >= (T).capacity) {                                \
-            if ((T).capacity == 0) (T).capacity = 256;                  \
-            else (T).capacity *= 2;                                     \
-            (T).items = realloc((T).items, (T).capacity * sizeof(*(T).items)); \
-        }                                                               \
-        (T).items[(T).count++] = item;                                  \
-    } while(0)                                                          \
+#define vector_reserve(v, req_cap)                                        \
+do {                                                                      \
+    if ((req_cap) > (v)->cap) {                                           \
+        if ((v)->cap == 0) {                                              \
+            (v)->cap = 256;                                               \
+        }                                                                 \
+        while ((req_cap) > (v)->cap) {                                    \
+            (v)->cap *= 2;                                                \
+        }                                                                 \
+        (v)->items = realloc((v)->items, (v)->cap * sizeof(*(v)->items)); \
+        assert((v)->items != NULL);                                       \
+    }                                                                     \
+ } while (0)
 
-#define vector_free(T) free((T).items)
+#define vector_append(v, item)                  \
+    do {                                        \
+        vector_reserve((v), (v)->count + 1);    \
+        (v)->items[(v)->count++] = (item);      \
+    } while(0)
+
+#define vector_free(v) free((v).items)
 
 typedef struct {
     const char *string;
