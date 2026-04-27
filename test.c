@@ -5,8 +5,8 @@
 int main()
 {
     {
-        Slice s1 = slice_new("slice 1 test from slice 1");
-        Slice s2 = slice_new("not slice 1");
+        Slice s1 = slice("slice 1 test from slice 1");
+        Slice s2 = slice("not slice 1");
 
         assert(slice_eq(s1, "slice 1 test from slice 1"));
         assert(!slice_eq(s1, s2));
@@ -16,7 +16,7 @@ int main()
         assert(!slice_eq_ignorecase(s1, " slice 1 test from slice 1"));
     }
     {
-        Slice s1 = slice_new("s");
+        Slice s1 = slice("s");
 
         assert(slice_eq(s1, 's'));
         assert(!slice_eq(s1, 'S'));
@@ -26,64 +26,64 @@ int main()
         assert(!slice_eq_ignorecase(s1, 'f'));
     }
     {
-        Slice s1 = slice_new("slice 1 test from slice 1");
-        s1 = slice_until_delim(&s1, ' ');
+        Slice s1 = slice("slice 1 test from slice 1");
+        s1 = slice_split(&s1, ' ');
 
         assert(slice_starts_with(s1, 's'));
         assert(!slice_starts_with(s1, 'd'));
     }
     {
-        Slice s1 = slice_new("slice 1 test from slice 1");
+        Slice s1 = slice("slice 1 test from slice 1");
 
         assert(slice_ends_with(s1, '1'));
         assert(!slice_ends_with(s1, '2'));
     }
     {
-        Slice s1 = slice_new("     slice 1 test from slice 1");
-        Slice actual = slice_trim(s1, -1);
-        Slice expected = slice_new("slice 1 test from slice 1");
+        Slice s1 = slice("     slice 1 test from slice 1");
+        Slice actual = slice_trim_left(s1);
+        Slice expected = slice("slice 1 test from slice 1");
 
         assert(slice_eq(expected, actual));
 
-        expected = slice_new("     slice 1 test from slice 1");
+        expected = slice("     slice 1 test from slice 1");
         assert(!slice_eq(expected, actual));
     }
     {
-        Slice s1 = slice_new("slice 1 test from slice 1     ");
-        Slice actual = slice_trim(s1, 1);
-        Slice expected = slice_new("slice 1 test from slice 1");
+        Slice s1 = slice("slice 1 test from slice 1     ");
+        Slice actual = slice_trim_right(s1);
+        Slice expected = slice("slice 1 test from slice 1");
 
         assert(slice_eq(expected, actual));
 
-        expected = slice_new("slice 1 test from slice 1     ");
+        expected = slice("slice 1 test from slice 1     ");
         assert(!slice_eq(expected, actual));
     }
     {
-        Slice s1 = slice_new("     slice 1 test from slice 1     ");
-        Slice actual = slice_trim(s1, 0);
-        Slice expected = slice_new("slice 1 test from slice 1");
+        Slice s1 = slice("     slice 1 test from slice 1     ");
+        Slice actual = slice_trim(s1);
+        Slice expected = slice("slice 1 test from slice 1");
 
         assert(slice_eq(expected, actual));
 
-        expected = slice_new("     slice 1 test from slice 1     ");
+        expected = slice("     slice 1 test from slice 1     ");
         assert(!slice_eq(expected, actual));
     }
     {
-        Slice s1 = slice_new("slice 1 test from slice 1");
+        Slice s1 = slice("slice 1 test from slice 1");
 
-        assert(slice_starts_with(s1, slice_new("slice")));
+        assert(slice_starts_with(s1, slice("slice")));
         assert(slice_starts_with(s1, "slice"));
 
-        assert(!slice_starts_with(s1, slice_new("Slice")));
+        assert(!slice_starts_with(s1, slice("Slice")));
         assert(!slice_starts_with(s1, "Slice"));
     }
     {
-        Slice s1 = slice_new("slice 1 test from slice 1");
+        Slice s1 = slice("slice 1 test from slice 1");
 
-        assert(slice_ends_with(s1, slice_new("1")));
+        assert(slice_ends_with(s1, slice("1")));
         assert(slice_ends_with(s1, "1"));
 
-        assert(!slice_ends_with(s1, slice_new("1 ")));
+        assert(!slice_ends_with(s1, slice("1 ")));
         assert(!slice_ends_with(s1, "1 "));
     }
     {
@@ -95,6 +95,11 @@ int main()
         assert(string_eq(buffer, "This is a testfile\n"));
 
         fclose(f);
+    }
+    {
+        Slice s1 = slice("123");
+
+        assert(slice_parse_int(s1) == 123);
     }
 
     return 0;

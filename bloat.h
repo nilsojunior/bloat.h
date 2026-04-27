@@ -69,12 +69,12 @@ do {                                                                      \
 #define vector_free(v) free((v).items)
 
 typedef struct {
-    const char *string;
+    const char *str;
     size_t len;
 } Slice;
 
 #define SLICE_FMT "%.*s"
-#define SLICE_ARG(slice) (int)slice.len, slice.string
+#define SLICE_ARG(slice) (int)slice.len, slice.str
 
 #define slice_starts_with(s1, s2)               \
     _Generic((s2),                              \
@@ -109,10 +109,14 @@ typedef struct {
              )(s1, s2)
 
 // Slice
-BLOATDEF Slice   slice_new_size(const char *string, size_t len);
-BLOATDEF Slice   slice_new(const char *string);
-BLOATDEF Slice   slice_trim(Slice slice, int direction); // -1 To trim left, +1 to trim right and 0 to trim both
-BLOATDEF Slice   slice_until_delim(Slice *slice, const char delim);
+BLOATDEF Slice   slice_size(const char *str, size_t len);
+BLOATDEF Slice   slice(const char *str);
+BLOATDEF Slice   slice_trim(Slice s);
+BLOATDEF Slice   slice_trim_left(Slice s);
+BLOATDEF Slice   slice_trim_right(Slice s);
+BLOATDEF Slice   slice_split(Slice *s, const char delim);
+BLOATDEF Slice   slice_split_whitespace(Slice *s);
+BLOATDEF int     slice_parse_int(Slice s);
 
 // Equals
 BLOATDEF bool    slice_eq_char(Slice s1, const char s2);
@@ -123,170 +127,219 @@ BLOATDEF bool    slice_eq_str(Slice s1, const char *s2);
 BLOATDEF bool    slice_eq_str_ignorecase(Slice s1, const char *s2);
 
 // Starts and ends with
-BLOATDEF bool    slice_starts_with_char(Slice slice, const char prefix);
-BLOATDEF bool    slice_ends_with_char(Slice slice, const char suffix);
-BLOATDEF bool    slice_starts_with_slice(Slice slice, Slice prefix);
-BLOATDEF bool    slice_ends_with_slice(Slice slice, Slice suffix);
-BLOATDEF bool    slice_starts_with_str(Slice slice, const char *prefix);
-BLOATDEF bool    slice_ends_with_str(Slice slice, const char *suffix);
+BLOATDEF bool    slice_starts_with_char(Slice s, const char prefix);
+BLOATDEF bool    slice_ends_with_char(Slice s, const char suffix);
+BLOATDEF bool    slice_starts_with_slice(Slice s, Slice prefix);
+BLOATDEF bool    slice_ends_with_slice(Slice s, Slice suffix);
+BLOATDEF bool    slice_starts_with_str(Slice s, const char *prefix);
+BLOATDEF bool    slice_ends_with_str(Slice s, const char *suffix);
 
 // Print
-BLOATDEF void    slice_print(Slice slice);
-BLOATDEF void    slice_println(Slice slice);
+BLOATDEF void    slice_print(Slice s);
+BLOATDEF void    slice_println(Slice s);
 
 // Log
-void             log_info(const char *msg, ...);
-void             log_warn(const char *msg, ...);
-void             log_err(const char *msg, ...);
-void             log_fatal(const char *msg, ...); // Exit program
+BLOATDEF void    log_info(const char *msg, ...);
+BLOATDEF void    log_warn(const char *msg, ...);
+BLOATDEF void    log_err(const char *msg, ...);
+BLOATDEF void    log_fatal(const char *msg, ...); // Exit program
 
 // C Strings
-BLOATDEF void    string_to_lowercase(char *string);
-BLOATDEF void    string_to_uppercase(char *string);
+BLOATDEF void    string_to_lowercase(char *s);
+BLOATDEF void    string_to_uppercase(char *s);
 BLOATDEF bool    string_eq(const char *s1, const char *s2);
 BLOATDEF bool    string_eq_ignorecase(const char *s1, const char *s2);
+
+// Char
+BLOATDEF char to_lowercase(char c);
+BLOATDEF char to_uppercase(char c);
+BLOATDEF bool is_whitespace(char c);
+BLOATDEF bool is_digit(char c);
 
 // FS
 #define fs_to_string(stream, buffer) fs_to_string_size((stream), (buffer), sizeof(buffer) - 1) // This expect the size of the buffer to be the file size + null terminator
 
 BLOATDEF FILE*   fs_open(const char *file_name, const char *mode); // TODO: Maybe add a should crash flag or another function to do that
 BLOATDEF long    fs_get_size(FILE *stream); // Returns the size of the file, without the null terminator
-BLOATDEF bool    fs_to_string_size(FILE *stream, char *buffer, size_t size); // Returns a null terminated string with the contents of the file
+BLOATDEF bool    fs_to_string_size(FILE *stream, char *buffer, size_t size); // Returns a null terminated str with the contents of the file
 
 #endif // BLOAT_H
 
 #if defined(BLOAT_STATIC_INLINE) || defined(BLOAT_IMPLEMENTATION)
 
-BLOATDEF char char_to_lowercase(char c)
+BLOATDEF char to_lowercase(char c)
 {
     return c >= 'A' && c <= 'Z' ? c + 32 : c;
 }
 
-BLOATDEF char char_to_uppercase(char c)
+BLOATDEF char to_uppercase(char c)
 {
     return c >= 'A' && c <= 'Z' ? c : c + 32;
 }
 
-BLOATDEF Slice slice_new_size(const char *string, size_t len)
+BLOATDEF bool is_whitespace(char c)
+{
+    return c == ' '  || // Space
+           c == '\f' || // Form feed
+           c == '\n' || // Line feed
+           c == '\r' || // Carriage return
+           c == '\t' || // Horizontal tab
+           c == '\v';   // Vertical tab
+}
+
+BLOATDEF bool is_digit(char c)
+{
+    return c >= '0' && c <= '9';
+}
+
+BLOATDEF Slice slice_size(const char *str, size_t len)
 {
     return (Slice) {
-        .string = string,
+        .str = str,
         .len = len,
     };
 }
 
-BLOATDEF Slice slice_new(const char *string)
+BLOATDEF Slice slice(const char *str)
 {
-    return slice_new_size(string, strlen(string));
+    return slice_size(str, strlen(str));
 }
 
 BLOATDEF bool slice_eq_slice(Slice s1, Slice s2)
 {
-    return s1.len == s2.len && memcmp(s1.string, s2.string, s1.len) == 0;
+    return s1.len == s2.len && memcmp(s1.str, s2.str, s1.len) == 0;
 }
 
 BLOATDEF bool slice_eq_slice_ignorecase(Slice s1, Slice s2)
 {
     if (s1.len != s2.len) return false;
     for (size_t i = 0; i < s1.len; ++i) {
-        char c1 = char_to_lowercase(s1.string[i]);
-        char c2 = char_to_lowercase(s2.string[i]);
+        char c1 = to_lowercase(s1.str[i]);
+        char c2 = to_lowercase(s2.str[i]);
         if (c1 != c2) return false;
     }
     return true;
 }
 
 BLOATDEF bool slice_eq_str_ignorecase(Slice s1, const char *s2) {
-    return slice_eq_slice_ignorecase(s1, slice_new(s2));
+    return slice_eq_slice_ignorecase(s1, slice(s2));
 }
 
 BLOATDEF bool slice_eq_char_ignorecase(Slice s1, const char s2) {
-    return s1.len == 1 && s1.string[0] == char_to_lowercase(s2);
+    return s1.len == 1 && s1.str[0] == to_lowercase(s2);
 }
 
 BLOATDEF bool slice_eq_str(Slice s1, const char *s2)
 {
-    return slice_eq_slice(s1, slice_new(s2));
+    return slice_eq_slice(s1, slice(s2));
 }
 
 BLOATDEF bool slice_eq_char(Slice s1, const char s2)
 {
-    return s1.len == 1 && s1.string[0] == s2;
+    return s1.len == 1 && s1.str[0] == s2;
 }
 
-BLOATDEF bool slice_starts_with_char(Slice slice, const char prefix)
+BLOATDEF bool slice_starts_with_char(Slice s, const char prefix)
 {
-    return slice.len > 0 && slice.string[0] == prefix;
+    return s.len > 0 && s.str[0] == prefix;
 }
 
-BLOATDEF bool slice_ends_with_char(Slice slice, const char suffix)
+BLOATDEF bool slice_ends_with_char(Slice s, const char suffix)
 {
-    return slice.len > 0 && slice.string[slice.len - 1] == suffix;
+    return s.len > 0 && s.str[s.len - 1] == suffix;
 }
 
-BLOATDEF bool slice_starts_with_slice(Slice slice, Slice prefix)
+BLOATDEF bool slice_starts_with_slice(Slice s, Slice prefix)
 {
-    if (prefix.len > slice.len) return false;
-    Slice actual = slice_new_size(slice.string, prefix.len);
+    if (prefix.len > s.len) return false;
+    Slice actual = slice_size(s.str, prefix.len);
     return slice_eq_slice(prefix, actual);
 }
 
-BLOATDEF bool slice_ends_with_slice(Slice slice, Slice suffix)
+BLOATDEF bool slice_ends_with_slice(Slice s, Slice suffix)
 {
-    if (suffix.len > slice.len) return false;
-    Slice actual = slice_new_size(slice.string + (slice.len - suffix.len), suffix.len);
+    if (suffix.len > s.len) return false;
+    Slice actual = slice_size(s.str + (s.len - suffix.len), suffix.len);
     return slice_eq_slice(suffix, actual);
 }
 
-BLOATDEF bool slice_starts_with_str(Slice slice, const char *prefix)
+BLOATDEF bool slice_starts_with_str(Slice s, const char *prefix)
 {
-    return slice_starts_with_slice(slice, slice_new(prefix));
+    return slice_starts_with_slice(s, slice(prefix));
 }
 
-BLOATDEF bool slice_ends_with_str(Slice slice, const char *suffix)
+BLOATDEF bool slice_ends_with_str(Slice s, const char *suffix)
 {
-    return slice_ends_with_slice(slice, slice_new(suffix));
+    return slice_ends_with_slice(s, slice(suffix));
 }
 
-BLOATDEF Slice slice_until_delim(Slice *slice, const char delim)
+BLOATDEF Slice slice_split(Slice *s, const char delim)
 {
     size_t i = 0;
-    while (i < slice->len && slice->string[i] != delim) ++i;
+    while (i < s->len && s->str[i] != delim) ++i;
 
-    Slice s = slice_new_size(slice->string, i);
+    Slice remainder = slice_size(s->str, i);
 
-    if (i < slice->len) ++i;
-    slice->len -= i;
-    slice->string += i;
+    if (i < s->len) ++i;
+    s->len -= i;
+    s->str += i;
 
-    return s;
+    return remainder;
 }
 
-// If direction is positive trim to the right, if negative trim to the left and if 0 trim both
-BLOATDEF Slice slice_trim(Slice slice, int direction)
+BLOATDEF Slice slice_split_whitespace(Slice *s)
 {
-    size_t start = 0;
-    size_t end = slice.len;
+    return slice_split(s, ' ');
+}
 
-    if (direction <= 0) {
-        while (start < end && isspace(slice.string[start])) start++;
+BLOATDEF int slice_parse_int(Slice s)
+{
+    int value = 0;
+    int sign  = 1;
+    size_t i  = 0;
+
+    if (s.len == 0) return value;
+
+    if (s.str[0] == '+' || s.str[0] == '-') {
+        if (s.str[0] == '-') sign = -1;
+        ++i;
     }
 
-    if (direction >= 0) {
-        while (start < end && isspace(slice.string[end - 1])) end--;
+    while (i < s.len && is_digit(s.str[i])) {
+        value = value * 10 + (s.str[i] - '0');
+        ++i;
     }
 
-    return slice_new_size(slice.string + start, end - start);
+    return value * sign;
 }
 
-BLOATDEF void slice_print(Slice slice)
+BLOATDEF Slice slice_trim_left(Slice s)
 {
-    for (size_t i = 0; i < slice.len; ++i) putchar(slice.string[i]);
+    size_t i = 0;
+    while (i < s.len && is_whitespace(s.str[i])) ++i;
+    return slice_size(s.str + i, s.len - i);
 }
 
-BLOATDEF void slice_println(Slice slice)
+BLOATDEF Slice slice_trim_right(Slice s)
 {
-    slice_print(slice); putchar('\n');
+    size_t i = 0;
+    while (i < s.len && is_whitespace(s.str[s.len - 1 - i])) ++i;
+    return slice_size(s.str, s.len - i);
+}
+
+BLOATDEF Slice slice_trim(Slice s)
+{
+    return slice_trim_left(slice_trim_right(s));
+}
+
+BLOATDEF void slice_print(Slice s)
+{
+    for (size_t i = 0; i < s.len; ++i) putchar(s.str[i]);
+}
+
+BLOATDEF void slice_println(Slice s)
+{
+    slice_print(s); putchar('\n');
 }
 
 // Log
@@ -340,28 +393,27 @@ void log_fatal(const char *msg, ...)
     exit(EXIT_FAILURE);
 }
 
-BLOATDEF void string_to_uppercase(char *string)
+BLOATDEF void string_to_uppercase(char *s)
 {
-    while (*string) {
-        *string = char_to_uppercase(*string);
-        string++;
+    while (*s) {
+        *s = to_uppercase(*s);
+        ++s;
     }
 }
 
-BLOATDEF void string_to_lowercase(char *string)
+BLOATDEF void string_to_lowercase(char *s)
 {
-    while (*string) {
-        *string = char_to_lowercase(*string);
-        string++;
+    while (*s) {
+        *s = to_lowercase(*s);
+        ++s;
     }
 }
 
 BLOATDEF bool string_eq(const char *s1, const char *s2)
 {
-    while (*s1 && *s2) {
-        if (*s1 != *s2) return false;
-        s1++;
-        s2++;
+    while (*s1 && *s1 == *s2) {
+        ++s1;
+        ++s2;
     }
     return *s1 == *s2;
 }
@@ -369,11 +421,11 @@ BLOATDEF bool string_eq(const char *s1, const char *s2)
 BLOATDEF bool string_eq_ignorecase(const char *s1, const char *s2)
 {
     while (*s1 && *s2) {
-        char c1 = char_to_lowercase(*s1);
-        char c2 = char_to_lowercase(*s2);
+        char c1 = to_lowercase(*s1);
+        char c2 = to_lowercase(*s2);
         if (c1 != c2) return false;
-        s1++;
-        s2++;
+        ++s1;
+        ++s2;
     }
     return *s1 == *s2;
 }
