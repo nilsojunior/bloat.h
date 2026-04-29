@@ -150,6 +150,9 @@ BLOATDEF void    string_to_uppercase(char *s);
 BLOATDEF bool    string_eq(const char *s1, const char *s2);
 BLOATDEF bool    string_eq_ignorecase(const char *s1, const char *s2);
 
+// Memory
+BLOATDEF bool memory_eq(const void *s1, const void *s2, size_t size);
+
 // Char
 BLOATDEF char to_lowercase(char c);
 BLOATDEF char to_uppercase(char c);
@@ -207,7 +210,7 @@ BLOATDEF Slice slice(const char *str)
 
 BLOATDEF bool slice_eq_slice(Slice s1, Slice s2)
 {
-    return s1.len == s2.len && memcmp(s1.str, s2.str, s1.len) == 0;
+    return s1.len == s2.len && memory_eq(s1.str, s2.str, s1.len);
 }
 
 BLOATDEF bool slice_eq_slice_ignorecase(Slice s1, Slice s2)
@@ -428,6 +431,19 @@ BLOATDEF bool string_eq_ignorecase(const char *s1, const char *s2)
         ++s2;
     }
     return *s1 == *s2;
+}
+
+// Memory
+BLOATDEF bool memory_eq(const void *s1, const void *s2, size_t size)
+{
+    const u8 *p1 = (const u8*) s1;
+    const u8 *p2 = (const u8*) s2;
+
+    for (u8 i = 0; i < size; ++i) {
+        if (p1[i] != p2[i]) return false;
+    }
+
+    return true;
 }
 
 BLOATDEF FILE* fs_open(const char *file_name, const char *mode)
