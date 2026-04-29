@@ -74,7 +74,7 @@ typedef struct {
 } Slice;
 
 #define SLICE_FMT "%.*s"
-#define SLICE_ARG(slice) (int)slice.len, slice.str
+#define SLICE_ARG(slice) (int)(slice).len, (slice).str
 
 #define slice_starts_with(s1, s2)               \
     _Generic((s2),                              \
