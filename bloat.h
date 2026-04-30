@@ -177,7 +177,7 @@ BLOATDEF char to_lowercase(char c)
 
 BLOATDEF char to_uppercase(char c)
 {
-    return c >= 'A' && c <= 'Z' ? c : c + 32;
+    return c >= 'A' && c <= 'Z' ? c : c - 32;
 }
 
 BLOATDEF bool is_whitespace(char c)
