@@ -33,6 +33,12 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
+typedef uintptr_t uptr;
+typedef intptr_t iptr;
+
+typedef size_t usize;
+typedef ssize_t isize;
+
 #define DEFER(value) do { result = (value); goto defer; } while(0)
 
 #define SIZEOF(array) sizeof((array)) / sizeof((array[0]))
