@@ -17,3 +17,7 @@ OpenGL loader, still missing core functionality.
 ** [[file:bloatmath.h][bloatmath.h]]
 
 Linear algebra for 2D and 3D computer graphics, still missing core functionality.
+
+** [[file:bloatarena.h][bloatarena.h]]
+
+Arena allocator implementation for POSIX-compliant systems, based on [[https://www.youtube.com/watch?v=jgiMagdjA1s&t=1243s][Magicalbat]] youtube video.
