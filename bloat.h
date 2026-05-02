@@ -166,6 +166,15 @@ BLOATDEF char to_uppercase(char c);
 BLOATDEF bool is_whitespace(char c);
 BLOATDEF bool is_digit(char c);
 
+// Type casting
+BLOATDEF u8  u8_cast(u16 x);
+BLOATDEF u16 u16_cast(u32 x);
+BLOATDEF u32 u32_cast(u64 x);
+
+BLOATDEF i8  i8_cast(i16 x);
+BLOATDEF i16 i16_cast(i32 x);
+BLOATDEF i32 i32_cast(i64 x);
+
 // FS
 #define fs_to_string(stream, buffer) fs_to_string_size((stream), (buffer), sizeof(buffer) - 1) // This expect the size of the buffer to be the file size + null terminator
 
@@ -200,6 +209,42 @@ BLOATDEF bool is_whitespace(char c)
 BLOATDEF bool is_digit(char c)
 {
     return c >= '0' && c <= '9';
+}
+
+BLOATDEF u8 u8_cast(u16 x)
+{
+    assert(x <= UINT8_MAX);
+    return (u8)x;
+}
+
+BLOATDEF u16 u16_cast(u32 x)
+{
+    assert(x <= UINT16_MAX);
+    return (u16)x;
+}
+
+BLOATDEF u32 u32_cast(u64 x)
+{
+    assert(x <= UINT32_MAX);
+    return (u32)x;
+}
+
+BLOATDEF i8 i8_cast(i16 x)
+{
+    assert(x <= INT8_MAX);
+    return (i8)x;
+}
+
+BLOATDEF i16 i16_cast(i32 x)
+{
+    assert(x <= INT16_MAX);
+    return (i16)x;
+}
+
+BLOATDEF i32 i32_cast(i64 x)
+{
+    assert(x <= INT32_MAX);
+    return (i32)x;
 }
 
 BLOATDEF Slice slice_size(const char *str, size_t len)
