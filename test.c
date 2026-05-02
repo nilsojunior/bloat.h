@@ -1,6 +1,5 @@
 #define BLOAT_IMPLEMENTATION
 #include "bloat.h"
-#include <assert.h>
 
 int main()
 {
