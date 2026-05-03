@@ -46,34 +46,34 @@ typedef ssize_t isize;
 
 #define FOREACH(i, array) for (size_t (i) = 0; (i) < sizeof((array)) / sizeof((array)[0]); ++(i))
 
-#define vector_define(T, Name)                  \
-    typedef struct {                            \
-        (T) *items;                             \
-        size_t count;                           \
-        size_t cap;                             \
-    } (Name);                                   \
+#define vector_define(T, Name) \
+    typedef struct {           \
+        T     *data;           \
+        size_t size;           \
+        size_t capacity;       \
+    } (Name)
 
-#define vector_reserve(v, req_cap)                                        \
-do {                                                                      \
-    if ((req_cap) > (v)->cap) {                                           \
-        if ((v)->cap == 0) {                                              \
-            (v)->cap = 256;                                               \
-        }                                                                 \
-        while ((req_cap) > (v)->cap) {                                    \
-            (v)->cap *= 2;                                                \
-        }                                                                 \
-        (v)->items = realloc((v)->items, (v)->cap * sizeof(*(v)->items)); \
-        assert((v)->items != NULL);                                       \
-    }                                                                     \
+#define vector_reserve(v, new_capacity)                                     \
+do {                                                                        \
+    if ((new_capacity) > (v)->capacity) {                                   \
+        if ((v)->capacity == 0) {                                           \
+            (v)->capacity = 256;                                            \
+        }                                                                   \
+        while ((new_capacity) > (v)->capacity) {                            \
+            (v)->capacity *= 2;                                             \
+        }                                                                   \
+        (v)->data = realloc((v)->data, (v)->capacity * sizeof(*(v)->data)); \
+        assert((v)->data != NULL);                                          \
+    }                                                                       \
  } while (0)
 
-#define vector_append(v, item)                  \
-    do {                                        \
-        vector_reserve((v), (v)->count + 1);    \
-        (v)->items[(v)->count++] = (item);      \
+#define vector_append(v, data)              \
+    do {                                    \
+        vector_reserve((v), (v)->size + 1); \
+        (v)->data[(v)->size++] = (data);    \
     } while(0)
 
-#define vector_free(v) free((v).items)
+#define vector_free(v) free((v).data)
 
 typedef struct {
     const char *str;
