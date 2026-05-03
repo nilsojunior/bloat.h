@@ -37,6 +37,8 @@ typedef struct {
     size_t pos;
 } ArenaTemp;
 
+BLOATADEF const char* arena_failure_reason(void);
+
 BLOATADEF Arena* init_arena(size_t capacity, size_t commit_size);
 BLOATADEF void   end_arena(Arena *arena);
 BLOATADEF void*  arena_push(Arena *arena, size_t size, size_t align, bool zero);
@@ -51,30 +53,55 @@ BLOATADEF void      end_arena_temp(ArenaTemp temp);
 
 #if defined(BLOATARENA_STATIC_INLINE) || defined(BLOATARENA_IMPLEMENTATION)
 
+static const char *arena__failure_reason = NULL;
+static char arena__failure_buffer[1024];
+
+BLOATADEF const char* arena_failure_reason(void)
+{
+    return arena__failure_reason;
+}
+
+static void arena__err(const char *s)
+{
+    arena__failure_reason = s;
+}
+
+static void arena__errno(const char *s)
+{
+    snprintf(arena__failure_buffer, sizeof(arena__failure_buffer), "%s: %s", s, strerror(errno));
+    arena__failure_reason = arena__failure_buffer;
+}
+
+#define arena_err(s, result) do { arena__err((s)); return (result); } while(0)
+#define arena_errno(s, result) do { arena__errno((s)); return (result); } while(0)
+
 #include <sys/mman.h>
 #include <unistd.h>
 
 static void* os_reserve(size_t size)
 {
     void *map = mmap(NULL, size, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    if (map == MAP_FAILED) return NULL;
+    if (map == MAP_FAILED) arena_errno("mmap failed", NULL);
     return map;
 }
 
-static void os_commit(void *ptr, size_t size)
+static bool os_commit(void *ptr, size_t size)
 {
-    assert(mprotect(ptr, size, PROT_READ | PROT_WRITE) == 0);
+    if (mprotect(ptr, size, PROT_READ | PROT_WRITE) != 0) arena_errno("mprotect failed", false);
+    return true;
 }
 
-static void os_decommit(void *ptr, size_t size)
+static bool os_decommit(void *ptr, size_t size)
 {
-    assert(mprotect(ptr, size, PROT_NONE) == 0);
-    assert(madvise(ptr, size, MADV_DONTNEED) == 0);
+    if (mprotect(ptr, size, PROT_NONE) != 0) arena_errno("mprotect failed", false);
+    if (madvise(ptr, size, MADV_DONTNEED) != 0) arena_errno("madvise failed", false);
+    return true;
 }
 
-static void os_release(void *ptr, size_t size)
+static bool os_release(void *ptr, size_t size)
 {
-    assert(munmap(ptr, size) == 0);
+    if (munmap(ptr, size) == 0) arena_errno("munmap failed", false);
+    return true;
 }
 
 static size_t os_pagesize(void)
@@ -90,9 +117,9 @@ BLOATADEF Arena* init_arena(size_t capacity, size_t commit_size)
     commit_size = align_pow2(commit_size, pagesize);
 
     Arena *arena = os_reserve(capacity);
-    assert(arena != NULL);
+    if (arena == NULL) return NULL;
 
-    os_commit(arena, commit_size);
+    if (!os_commit(arena, commit_size)) return NULL;
 
     arena->capacity    = capacity;
     arena->size        = commit_size;
@@ -112,7 +139,7 @@ BLOATADEF void* arena_push(Arena *arena, size_t size, size_t align, bool zero)
     size_t aligned_pos = align_pow2(arena->pos, align);
     size_t new_pos     = aligned_pos + size;
 
-    if (new_pos > arena->capacity) return NULL;
+    if (new_pos > arena->capacity) arena_err("Arena capacity exceeded", NULL);
 
     if (new_pos > arena->size) {
         // size_t new_size = new_pos;
@@ -126,7 +153,7 @@ BLOATADEF void* arena_push(Arena *arena, size_t size, size_t align, bool zero)
         uint8_t *commit_ptr  = (uint8_t*)arena + arena->size;
         size_t   commit_size = new_size - arena->size;
 
-        os_commit(commit_ptr, commit_size);
+        if (!os_commit(commit_ptr, commit_size)) return NULL;
 
         arena->size = new_size;
     }
@@ -168,5 +195,8 @@ BLOATADEF void end_arena_temp(ArenaTemp temp)
 {
     arena_pop_to(temp.arena, temp.pos);
 }
+
+#undef arena_err
+#undef arena_errno
 
 #endif // BLOATARENA_STATIC_INLINE || BLOATARENA_IMPLEMENTATION
