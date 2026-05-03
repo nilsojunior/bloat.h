@@ -75,6 +75,8 @@ do {                                                                        \
 
 #define vector_free(v) free((v).data)
 
+#define vector_foreach(T, data, v) for (T *(data) = (v)->data; (data) < (v)->data + (v)->size; ++(data))
+
 typedef struct {
     const char *str;
     size_t len;
