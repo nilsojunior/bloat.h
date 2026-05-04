@@ -100,7 +100,7 @@ static bool os_decommit(void *ptr, size_t size)
 
 static bool os_release(void *ptr, size_t size)
 {
-    if (munmap(ptr, size) == 0) arena_errno("munmap failed", false);
+    if (munmap(ptr, size) != 0) arena_errno("munmap failed", false);
     return true;
 }
 
