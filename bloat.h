@@ -126,6 +126,7 @@ BLOATDEF Slice   slice_trim_right(Slice s);
 BLOATDEF Slice   slice_split(Slice *s, const char delim);
 BLOATDEF Slice   slice_split_whitespace(Slice *s);
 BLOATDEF int     slice_parse_int(Slice s);
+BLOATDEF float   slice_parse_float(Slice s);
 
 // Equals
 BLOATDEF bool    slice_eq_char(Slice s1, const char s2);
@@ -365,6 +366,38 @@ BLOATDEF int slice_parse_int(Slice s)
     while (i < s.len && is_digit(s.str[i])) {
         value = value * 10 + (s.str[i] - '0');
         ++i;
+    }
+
+    return value * sign;
+}
+
+BLOATDEF float slice_parse_float(Slice s)
+{
+    float value = 0.0f;
+    float sign  = 1.0f;
+    size_t i    = 0;
+
+    if (s.len == 0) return value;
+
+    if (s.str[0] == '+' || s.str[0] == '-') {
+        if (s.str[0] == '-') sign = -1;
+        ++i;
+    }
+
+    while (i < s.len && is_digit(s.str[i])) {
+        value = value * 10 + (s.str[i] - '0');
+        ++i;
+    }
+
+    if (s.str[i] == '.') {
+        float divisor = 10.0f;
+        ++i;
+
+        while (is_digit(s.str[i])) {
+            value   += ((s.str[i] - '0')) / divisor;
+            divisor *= 10.0f;
+            ++i;
+        }
     }
 
     return value * sign;

@@ -100,6 +100,11 @@ int main()
 
         assert(slice_parse_int(s1) == 123);
     }
+    {
+        Slice s1 = slice("123.789");
+
+        assert(slice_parse_float(s1) == 123.789f);
+    }
 
     return 0;
 }
