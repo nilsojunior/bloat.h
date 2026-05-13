@@ -125,8 +125,20 @@ BLOATDEF Slice   slice_trim_left(Slice s);
 BLOATDEF Slice   slice_trim_right(Slice s);
 BLOATDEF Slice   slice_split(Slice *s, const char delim);
 BLOATDEF Slice   slice_split_whitespace(Slice *s);
+// Slice parsers
 BLOATDEF int     slice_parse_int(Slice s);
 BLOATDEF float   slice_parse_float(Slice s);
+BLOATDEF double  slice_parse_double(Slice s);
+// Signed
+BLOATDEF i8      slice_parse_i8(Slice s);
+BLOATDEF i16     slice_parse_i16(Slice s);
+BLOATDEF i32     slice_parse_i32(Slice s);
+BLOATDEF i64     slice_parse_i64(Slice s);
+// Unsigned
+BLOATDEF u8      slice_parse_u8(Slice s);
+BLOATDEF u16     slice_parse_u16(Slice s);
+BLOATDEF u32     slice_parse_u32(Slice s);
+BLOATDEF u64     slice_parse_u64(Slice s);
 
 // Equals
 BLOATDEF bool    slice_eq_char(Slice s1, const char s2);
@@ -350,26 +362,71 @@ BLOATDEF Slice slice_split_whitespace(Slice *s)
     return slice_split(s, ' ');
 }
 
+#define SLICE_PARSE(T)                          \
+    T value  = 0;                               \
+    T sign   = 1;                               \
+    size_t i = 0;                               \
+                                                \
+    if (s.len == 0) return value;               \
+                                                \
+    if (s.str[0] == '+' || s.str[0] == '-') {   \
+        if (s.str[0] == '-') sign = -1;         \
+        ++i;                                    \
+    }                                           \
+                                                \
+    while (i < s.len && is_digit(s.str[i])) {   \
+        value = value * 10 + (s.str[i] - '0');  \
+        ++i;                                    \
+    }                                           \
+                                                \
+    return value * sign;
+
 BLOATDEF int slice_parse_int(Slice s)
 {
-    int value = 0;
-    int sign  = 1;
-    size_t i  = 0;
-
-    if (s.len == 0) return value;
-
-    if (s.str[0] == '+' || s.str[0] == '-') {
-        if (s.str[0] == '-') sign = -1;
-        ++i;
-    }
-
-    while (i < s.len && is_digit(s.str[i])) {
-        value = value * 10 + (s.str[i] - '0');
-        ++i;
-    }
-
-    return value * sign;
+    SLICE_PARSE(int);
 }
+
+BLOATDEF i8 slice_parse_i8(Slice s)
+{
+    SLICE_PARSE(i8);
+}
+
+BLOATDEF i16 slice_parse_i16(Slice s)
+{
+    SLICE_PARSE(i16);
+}
+
+BLOATDEF i32 slice_parse_i32(Slice s)
+{
+    SLICE_PARSE(i32);
+}
+
+BLOATDEF i64 slice_parse_i64(Slice s)
+{
+    SLICE_PARSE(i64);
+}
+
+BLOATDEF u8 slice_parse_u8(Slice s)
+{
+    SLICE_PARSE(u8);
+}
+
+BLOATDEF u16 slice_parse_u16(Slice s)
+{
+    SLICE_PARSE(u16);
+}
+
+BLOATDEF u32 slice_parse_u32(Slice s)
+{
+    SLICE_PARSE(u32);
+}
+
+BLOATDEF u64 slice_parse_u64(Slice s)
+{
+    SLICE_PARSE(u64);
+}
+
+#undef SLICE_PARSE
 
 BLOATDEF float slice_parse_float(Slice s)
 {
@@ -391,6 +448,38 @@ BLOATDEF float slice_parse_float(Slice s)
 
     if (s.str[i] == '.') {
         float divisor = 10.0f;
+        ++i;
+
+        while (is_digit(s.str[i])) {
+            value   += ((s.str[i] - '0')) / divisor;
+            divisor *= 10.0f;
+            ++i;
+        }
+    }
+
+    return value * sign;
+}
+
+BLOATDEF double slice_parse_double(Slice s)
+{
+    double value = 0.0;
+    double sign  = 1.0;
+    size_t i     = 0;
+
+    if (s.len == 0) return value;
+
+    if (s.str[0] == '+' || s.str[0] == '-') {
+        if (s.str[0] == '-') sign = -1;
+        ++i;
+    }
+
+    while (i < s.len && is_digit(s.str[i])) {
+        value = value * 10 + (s.str[i] - '0');
+        ++i;
+    }
+
+    if (s.str[i] == '.') {
+        double divisor = 10.0;
         ++i;
 
         while (is_digit(s.str[i])) {
