@@ -118,8 +118,8 @@ typedef struct {
              )(s1, s2)
 
 // Slice
-BLOATDEF Slice   slice_size(const char *str, size_t len);
 BLOATDEF Slice   slice(const char *str);
+BLOATDEF Slice   slice_size(const char *str, size_t len);
 BLOATDEF Slice   slice_trim(Slice s);
 BLOATDEF Slice   slice_trim_left(Slice s);
 BLOATDEF Slice   slice_trim_right(Slice s);
@@ -291,11 +291,13 @@ BLOATDEF bool slice_eq_slice_ignorecase(Slice s1, Slice s2)
     return true;
 }
 
-BLOATDEF bool slice_eq_str_ignorecase(Slice s1, const char *s2) {
+BLOATDEF bool slice_eq_str_ignorecase(Slice s1, const char *s2)
+{
     return slice_eq_slice_ignorecase(s1, slice(s2));
 }
 
-BLOATDEF bool slice_eq_char_ignorecase(Slice s1, const char s2) {
+BLOATDEF bool slice_eq_char_ignorecase(Slice s1, const char s2)
+{
     return s1.len == 1 && s1.str[0] == to_lowercase(s2);
 }
 
